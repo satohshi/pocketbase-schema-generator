@@ -1,0 +1,17 @@
+{
+	"name": "pocketbase-ts-schema-generator",
+	"version": "0.0.1",
+	"description": "JS hooks for PocketBase to help you with schema generation for pocketbase-ts package during development",
+	"author": "satohshi",
+	"license": "MIT",
+	"scripts": {
+		"dev": "tsc -w --outDir ./pb/pb_hooks/",
+		"build": "tsc --outDir ./dist/",
+		"lint": "tsc --noEmit && prettier --check .",
+		"format": "prettier --write ."
+	},
+	"devDependencies": {
+		"prettier": "^3.3.3",
+		"typescript": "^5.6.3"
+	}
+}
