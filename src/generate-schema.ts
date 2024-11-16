@@ -95,7 +95,7 @@ export default () => {
 	}
 
 	// relations
-	const relFieldMap: Record<string, string[]> = {}
+	const collectionToRelationMap: Record<string, string[]> = {}
 	for (const collection of allCollections) {
 		const fieldsWithUniqueIndex = new Set(
 			collection.indexes
@@ -114,16 +114,16 @@ export default () => {
 				const hasUniqueConstraint = fieldsWithUniqueIndex.has(fieldSchema.name)
 
 				// Forward relation
-				relFieldMap[collection.name] ??= []
-				relFieldMap[collection.name]!.push(
+				collectionToRelationMap[collection.name] ??= []
+				collectionToRelationMap[collection.name]!.push(
 					`${fieldSchema.name}${
 						isOptional ? '?' : ''
 					}: ${toPascalCase(relatedCollectionName)}${isToMany ? '[]' : ''}`
 				)
 
 				// Back relation
-				relFieldMap[relatedCollectionName] ??= []
-				relFieldMap[relatedCollectionName].push(
+				collectionToRelationMap[relatedCollectionName] ??= []
+				collectionToRelationMap[relatedCollectionName].push(
 					`${collection.name}_via_${fieldSchema.name}?: ${toPascalCase(collection.name)}${
 						hasUniqueConstraint ? '' : '[]'
 					}`
@@ -134,15 +134,15 @@ export default () => {
 
 	// schema
 	let schemaText = newLine(0, 'export type Schema = {')
-	for (const [collection, relFields] of Object.entries(relFieldMap)) {
+	for (const [collection, relations] of Object.entries(collectionToRelationMap)) {
 		schemaText += newLine(1, `${collection}: {`)
 		schemaText += newLine(2, `type: ${toPascalCase(collection)}`)
 
-		if (relFields.length) {
-			schemaText += newLine(2, `relFields: {`)
+		if (relations.length) {
+			schemaText += newLine(2, `relations: {`)
 
-			for (const relField of relFields) {
-				schemaText += newLine(3, relField)
+			for (const relation of relations) {
+				schemaText += newLine(3, relation)
 			}
 
 			schemaText += newLine(2, `}`)

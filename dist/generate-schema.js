@@ -66,7 +66,7 @@ exports.default = () => {
         collectionInterfaces += newLine(1, 'readonly [uniqueIdentifier]: unique symbol');
         collectionInterfaces += newLine(0, '}', 2);
     }
-    const relFieldMap = {};
+    const collectionToRelationMap = {};
     for (const collection of allCollections) {
         const fieldsWithUniqueIndex = new Set(collection.indexes
             .filter((index) => {
@@ -79,21 +79,21 @@ exports.default = () => {
                 const isToMany = Number(fieldSchema.options.maxSelect) !== 1;
                 const relatedCollectionName = collectionIdToNameMap[fieldSchema.options.collectionId];
                 const hasUniqueConstraint = fieldsWithUniqueIndex.has(fieldSchema.name);
-                (_a = relFieldMap[_c = collection.name]) !== null && _a !== void 0 ? _a : (relFieldMap[_c] = []);
-                relFieldMap[collection.name].push(`${fieldSchema.name}${isOptional ? '?' : ''}: ${toPascalCase(relatedCollectionName)}${isToMany ? '[]' : ''}`);
-                (_b = relFieldMap[relatedCollectionName]) !== null && _b !== void 0 ? _b : (relFieldMap[relatedCollectionName] = []);
-                relFieldMap[relatedCollectionName].push(`${collection.name}_via_${fieldSchema.name}?: ${toPascalCase(collection.name)}${hasUniqueConstraint ? '' : '[]'}`);
+                (_a = collectionToRelationMap[_c = collection.name]) !== null && _a !== void 0 ? _a : (collectionToRelationMap[_c] = []);
+                collectionToRelationMap[collection.name].push(`${fieldSchema.name}${isOptional ? '?' : ''}: ${toPascalCase(relatedCollectionName)}${isToMany ? '[]' : ''}`);
+                (_b = collectionToRelationMap[relatedCollectionName]) !== null && _b !== void 0 ? _b : (collectionToRelationMap[relatedCollectionName] = []);
+                collectionToRelationMap[relatedCollectionName].push(`${collection.name}_via_${fieldSchema.name}?: ${toPascalCase(collection.name)}${hasUniqueConstraint ? '' : '[]'}`);
             }
         }
     }
     let schemaText = newLine(0, 'export type Schema = {');
-    for (const [collection, relFields] of Object.entries(relFieldMap)) {
+    for (const [collection, relations] of Object.entries(collectionToRelationMap)) {
         schemaText += newLine(1, `${collection}: {`);
         schemaText += newLine(2, `type: ${toPascalCase(collection)}`);
-        if (relFields.length) {
-            schemaText += newLine(2, `relFields: {`);
-            for (const relField of relFields) {
-                schemaText += newLine(3, relField);
+        if (relations.length) {
+            schemaText += newLine(2, `relations: {`);
+            for (const relation of relations) {
+                schemaText += newLine(3, relation);
             }
             schemaText += newLine(2, `}`);
         }
