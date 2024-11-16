@@ -106,6 +106,9 @@ export default () => {
 		)
 
 		for (const fieldSchema of collection.schema.fields() as Array<SchemaField>) {
+			// has to be outside if block for collections without relations
+			collectionToRelationMap[collection.name] ??= []
+
 			if (fieldSchema.type === 'relation') {
 				const isOptional = !fieldSchema.required
 				const isToMany = Number(fieldSchema.options.maxSelect) !== 1
@@ -114,7 +117,6 @@ export default () => {
 				const hasUniqueConstraint = fieldsWithUniqueIndex.has(fieldSchema.name)
 
 				// Forward relation
-				collectionToRelationMap[collection.name] ??= []
 				collectionToRelationMap[collection.name]!.push(
 					`${fieldSchema.name}${
 						isOptional ? '?' : ''

@@ -74,12 +74,12 @@ exports.default = () => {
         })
             .map((index) => /^CREATE UNIQUE.+\(`(.+)`\)$/.exec(index)[1]));
         for (const fieldSchema of collection.schema.fields()) {
+            (_a = collectionToRelationMap[_c = collection.name]) !== null && _a !== void 0 ? _a : (collectionToRelationMap[_c] = []);
             if (fieldSchema.type === 'relation') {
                 const isOptional = !fieldSchema.required;
                 const isToMany = Number(fieldSchema.options.maxSelect) !== 1;
                 const relatedCollectionName = collectionIdToNameMap[fieldSchema.options.collectionId];
                 const hasUniqueConstraint = fieldsWithUniqueIndex.has(fieldSchema.name);
-                (_a = collectionToRelationMap[_c = collection.name]) !== null && _a !== void 0 ? _a : (collectionToRelationMap[_c] = []);
                 collectionToRelationMap[collection.name].push(`${fieldSchema.name}${isOptional ? '?' : ''}: ${toPascalCase(relatedCollectionName)}${isToMany ? '[]' : ''}`);
                 (_b = collectionToRelationMap[relatedCollectionName]) !== null && _b !== void 0 ? _b : (collectionToRelationMap[relatedCollectionName] = []);
                 collectionToRelationMap[relatedCollectionName].push(`${collection.name}_via_${fieldSchema.name}?: ${toPascalCase(collection.name)}${hasUniqueConstraint ? '' : '[]'}`);
