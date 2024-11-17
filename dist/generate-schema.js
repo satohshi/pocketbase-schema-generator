@@ -1,22 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const PATH_TO_SCHEMA_FILE = './schema.ts';
-const UNIQUE_IDENTIFIER = `declare const uniqueIdentifier: unique symbol`;
-const BASE_COLLECTION_INTERFACE = `
-interface BaseCollection {
+const UNIQUE_IDENTIFIER_KEY = `declare const uniqueIdentifier: unique symbol`;
+const UNIQUE_IDENTIFIER = `
+	/**
+	 * This is a unique identifier to help TypeScript differentiate this interface from others sharing the same properties.
+	 * Refer to https://github.com/satohshi/pocketbase-ts#dealing-with-tables-with-exactly-the-same-properties for more information.
+	 */
+	readonly [uniqueIdentifier]: unique symbol
+`;
+const BASE_COLLECTION_INTERFACE = `interface BaseCollection {
     id: string
     created: string
     updated: string
 }`;
-const AUTH_COLLECTION_INTERFACE = `
-interface AuthCollection extends BaseCollection {
+const AUTH_COLLECTION_INTERFACE = `interface AuthCollection extends BaseCollection {
     username: string
     email: string
     emailVisibility: boolean
     verified: boolean
 }`;
-const VIEW_COLLECTION_INTERFACE = `
-interface ViewCollection {
+const VIEW_COLLECTION_INTERFACE = `interface ViewCollection {
     id: string
 }`;
 const COLLECTOIN_TYPE_MAP = {
@@ -39,32 +43,46 @@ const TYPE_MAP = {
 exports.default = () => {
     var _a, _b;
     var _c;
+    const startedAt = Date.now();
     const allCollections = [
-        ...$app.dao().findCollectionsByType('base'),
         ...$app.dao().findCollectionsByType('auth'),
+        ...$app.dao().findCollectionsByType('base'),
         ...$app.dao().findCollectionsByType('view'),
     ];
     const collectionIdToNameMap = Object.fromEntries(allCollections.map((collection) => [collection.id, collection.name]));
-    let collectionInterfaces = newLine(0, UNIQUE_IDENTIFIER, 1) +
-        newLine(0, BASE_COLLECTION_INTERFACE, 1) +
-        newLine(0, AUTH_COLLECTION_INTERFACE, 1) +
+    let hasOverlap = false;
+    let collectionInterfaces = newLine(0, BASE_COLLECTION_INTERFACE, 2) +
+        newLine(0, AUTH_COLLECTION_INTERFACE, 2) +
         newLine(0, VIEW_COLLECTION_INTERFACE, 2);
+    const fieldSets = [];
     for (const collection of allCollections) {
+        const fields = new Set();
         collectionInterfaces += newLine(0, `export interface ${toPascalCase(collection.name)} extends ${COLLECTOIN_TYPE_MAP[collection.type]} {`);
         for (const field of collection.schema.fields()) {
             const { type, name, options } = field;
             const multipleValues = ['file', 'relation', 'select'].includes(type) && Number(options.maxSelect) !== 1;
             if (type === 'select') {
                 const selectOptions = options.values.map((v) => `'${v}'`).join(' | ');
-                collectionInterfaces += newLine(1, `${name}: ${multipleValues ? `(${selectOptions})[]` : selectOptions}`);
+                const field = `${name}: ${multipleValues ? `(${selectOptions})[]` : selectOptions}`;
+                fields.add(field);
+                collectionInterfaces += newLine(1, field);
             }
             else {
                 const fieldType = TYPE_MAP[type];
-                collectionInterfaces += newLine(1, `${name}: ${fieldType}${multipleValues ? '[]' : ''}`);
+                const field = `${name}: ${fieldType}${multipleValues ? '[]' : ''}`;
+                fields.add(field);
+                collectionInterfaces += newLine(1, field);
             }
         }
-        collectionInterfaces += newLine(1, 'readonly [uniqueIdentifier]: unique symbol');
+        if (fieldSets.some((set) => haveSameValues(set, fields))) {
+            hasOverlap = true;
+            collectionInterfaces += newLine(1, UNIQUE_IDENTIFIER);
+        }
         collectionInterfaces += newLine(0, '}', 2);
+        fieldSets.push(fields);
+    }
+    if (hasOverlap) {
+        collectionInterfaces = newLine(0, UNIQUE_IDENTIFIER_KEY, 2) + collectionInterfaces;
     }
     const collectionToRelationMap = {};
     for (const collection of allCollections) {
@@ -100,6 +118,7 @@ exports.default = () => {
         schemaText += newLine(1, `}`);
     }
     schemaText += newLine(0, `}`);
+    console.log(`Generated schema.ts in ${Date.now() - startedAt}ms`);
     $os.writeFile(PATH_TO_SCHEMA_FILE, collectionInterfaces + schemaText, 0o644);
 };
 function newLine(indent, str, newLine = 1) {
@@ -110,4 +129,9 @@ function toPascalCase(collectionName) {
         .split('_')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join('');
+}
+function haveSameValues(set1, set2) {
+    if (set1.size !== set2.size)
+        return false;
+    return [...set1].every((value) => set2.has(value));
 }
