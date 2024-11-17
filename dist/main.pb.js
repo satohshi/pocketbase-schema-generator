@@ -2,12 +2,12 @@
 onAfterBootstrap(() => {
     require(`${__hooks}/generate-schema.js`).default();
 });
-onModelAfterCreate(() => {
+onCollectionAfterCreateRequest(() => {
     require(`${__hooks}/generate-schema.js`).default();
 });
-onModelAfterUpdate(() => {
+onCollectionAfterUpdateRequest(() => {
     require(`${__hooks}/generate-schema.js`).default();
 });
-onModelAfterDelete(() => {
+onCollectionAfterDeleteRequest(() => {
     require(`${__hooks}/generate-schema.js`).default();
 });
