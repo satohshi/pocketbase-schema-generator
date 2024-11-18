@@ -1,5 +1,8 @@
 /// <reference path="../pb/pb_data/types.d.ts" />
 
+import { SchemaFields, generateDocString } from './generate-docs'
+import { haveSameValues, newLine, toPascalCase } from './utils'
+
 const PATH_TO_SCHEMA_FILE = './schema.ts'
 
 const UNIQUE_IDENTIFIER_KEY = `declare const uniqueIdentifier: unique symbol`
@@ -36,20 +39,13 @@ const COLLECTOIN_TYPE_MAP: Record<string, string> = {
 }
 
 const TYPE_MAP: Record<string, string> = {
-	text: 'string',
-	editor: 'string',
 	number: 'number',
 	bool: 'boolean',
-	email: 'string',
-	url: 'string',
-	date: 'string',
-	relation: 'string',
-	file: 'string',
 	json: 'any',
+	// everything else is "string"
 }
 
 export default () => {
-	const startedAt = Date.now()
 	const allCollections = [
 		...$app.dao().findCollectionsByType('auth'),
 		...$app.dao().findCollectionsByType('base'),
@@ -61,7 +57,7 @@ export default () => {
 	)
 
 	// interfaces
-	let hasOverlap = false
+	let addedUniqueKey = false
 	let collectionInterfaces =
 		newLine(0, BASE_COLLECTION_INTERFACE, 2) +
 		newLine(0, AUTH_COLLECTION_INTERFACE, 2) +
@@ -79,9 +75,12 @@ export default () => {
 
 		for (const field of collection.schema.fields() as Array<SchemaField>) {
 			const { type, name, options } = field
+			const multipleValues = options.isMultiple?.() ?? false
 
-			const multipleValues =
-				['file', 'relation', 'select'].includes(type) && Number(options.maxSelect) !== 1
+			collectionInterfaces += newLine(
+				1,
+				generateDocString(field as SchemaFields, multipleValues, collectionIdToNameMap)
+			)
 
 			if (type === 'select') {
 				const selectOptions = options.values.map((v: string) => `'${v}'`).join(' | ')
@@ -91,7 +90,7 @@ export default () => {
 
 				collectionInterfaces += newLine(1, field)
 			} else {
-				const fieldType = TYPE_MAP[type]
+				const fieldType = TYPE_MAP[type] ?? 'string'
 
 				const field = `${name}: ${fieldType}${multipleValues ? '[]' : ''}`
 				fields.add(field)
@@ -102,18 +101,17 @@ export default () => {
 
 		// add unique identifier if there are collections with the same set of fields
 		if (fieldSets.some((set) => haveSameValues(set, fields))) {
-			hasOverlap = true
+			// add unique identifier at the top if there are collections with the same set of fields
+			if (!addedUniqueKey) {
+				collectionInterfaces = newLine(0, UNIQUE_IDENTIFIER_KEY, 2) + collectionInterfaces
+				addedUniqueKey = true
+			}
 			collectionInterfaces += newLine(1, UNIQUE_IDENTIFIER)
 		}
 
 		collectionInterfaces += newLine(0, '}', 2)
 
 		fieldSets.push(fields)
-	}
-
-	// add unique identifier at the top if there are collections with the same set of fields
-	if (hasOverlap) {
-		collectionInterfaces = newLine(0, UNIQUE_IDENTIFIER_KEY, 2) + collectionInterfaces
 	}
 
 	// relations
@@ -175,26 +173,5 @@ export default () => {
 	}
 	schemaText += newLine(0, `}`)
 
-	console.log(`Generated schema.ts in ${Date.now() - startedAt}ms`)
-
 	$os.writeFile(PATH_TO_SCHEMA_FILE, collectionInterfaces + schemaText, 0o644 as any)
-}
-
-/**
- * Utils
- */
-function newLine(indent: number, str: string, newLine = 1) {
-	return '    '.repeat(indent) + str + '\n'.repeat(newLine)
-}
-
-function toPascalCase(collectionName: string) {
-	return collectionName
-		.split('_')
-		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-		.join('')
-}
-
-function haveSameValues(set1: Set<string>, set2: Set<string>) {
-	if (set1.size !== set2.size) return false
-	return [...set1].every((value) => set2.has(value))
 }
