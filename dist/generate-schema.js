@@ -94,12 +94,25 @@ exports.default = () => {
                 const relatedCollectionName = collectionIdToNameMap[fieldSchema.options.collectionId];
                 const hasUniqueConstraint = fieldsWithUniqueIndex.has(fieldSchema.name);
                 collectionToRelationMap[collection.name].push(`${fieldSchema.name}${isOptional ? '?' : ''}: ${(0, utils_1.toPascalCase)(relatedCollectionName)}${isToMany ? '[]' : ''}`);
+                let backRelation = `${collection.name}_via_${fieldSchema.name}?: ${(0, utils_1.toPascalCase)(collection.name)}`;
+                if (!hasUniqueConstraint) {
+                    backRelation = `// ${backRelation}[]`;
+                }
                 (_e = collectionToRelationMap[relatedCollectionName]) !== null && _e !== void 0 ? _e : (collectionToRelationMap[relatedCollectionName] = []);
-                collectionToRelationMap[relatedCollectionName].push(`${collection.name}_via_${fieldSchema.name}?: ${(0, utils_1.toPascalCase)(collection.name)}${hasUniqueConstraint ? '' : '[]'}`);
+                collectionToRelationMap[relatedCollectionName].push(backRelation);
             }
         }
     }
-    let schemaText = (0, utils_1.newLine)(0, 'export type Schema = {');
+    let schemaText = `/**
+ * Commented-out back-relations are what will be inferred by pocketbase-ts from the forward relations.
+ *
+ * The "UNIQUE index constraint" case is automatically handled by this hook,
+ * but if you want to make a back-relation non-nullable, you can uncomment it and remove the "?".
+ *
+ * See [here](https://github.com/satohshi/pocketbase-ts#back-relations) for more information.
+ */
+`;
+    schemaText += (0, utils_1.newLine)(0, 'export type Schema = {');
     for (const [collection, relations] of Object.entries(collectionToRelationMap)) {
         schemaText += (0, utils_1.newLine)(1, `${collection}: {`);
         schemaText += (0, utils_1.newLine)(2, `type: ${(0, utils_1.toPascalCase)(collection)}`);
