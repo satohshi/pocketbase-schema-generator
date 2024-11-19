@@ -169,7 +169,7 @@ export const generateDocString = (
 	const rows = [
 		`/**`,
 		`| ${' '.repeat(leftColWidth)} | ${' '.repeat(rightColWidth)} |`,
-		`| ${'-'.repeat(leftColWidth)} | :${'-'.repeat(rightColWidth - 2)}: |`,
+		`| ${'-'.repeat(leftColWidth)} | ${'-'.repeat(rightColWidth)} |`,
 		`| ${'type'.padEnd(leftColWidth, ' ')} | ${typeNameStr.padEnd(rightColWidth, ' ')} |`,
 		`| ${'required'.padEnd(leftColWidth, ' ')} | ${requiredStr.padEnd(rightColWidth, ' ')} |`,
 	]
