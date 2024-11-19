@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "tsc -w --outDir ./pb/pb_hooks/",
-		"build": "tsc --outDir ./dist/",
+		"build": "tsc --outDir ./pb_hooks/",
 		"lint": "tsc --noEmit && prettier --check .",
 		"format": "prettier --write ."
 	},
