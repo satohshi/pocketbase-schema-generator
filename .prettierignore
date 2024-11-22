@@ -1,2 +1,3 @@
 pb
-dist
+pb_hooks
+pnpm-lock.yaml
