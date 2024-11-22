@@ -1,32 +1,27 @@
 lockfileVersion: '6.0'
 
 settings:
-    autoInstallPeers: true
-    excludeLinksFromLockfile: false
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 devDependencies:
-    prettier:
-        specifier: ^3.3.3
-        version: 3.3.3
-    typescript:
-        specifier: ^5.6.3
-        version: 5.6.3
+  prettier:
+    specifier: ^3.3.3
+    version: 3.3.3
+  typescript:
+    specifier: ^5.7.2
+    version: 5.7.2
 
 packages:
-    /prettier@3.3.3:
-        resolution:
-            {
-                integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==,
-            }
-        engines: { node: '>=14' }
-        hasBin: true
-        dev: true
 
-    /typescript@5.6.3:
-        resolution:
-            {
-                integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==,
-            }
-        engines: { node: '>=14.17' }
-        hasBin: true
-        dev: true
+  /prettier@3.3.3:
+    resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: true
+
+  /typescript@5.7.2:
+    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    dev: true
