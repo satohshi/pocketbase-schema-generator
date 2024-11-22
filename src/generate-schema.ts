@@ -2,8 +2,9 @@
 
 import { SchemaFields, generateDocString } from './generate-docs'
 import { haveSameValues, newLine, toPascalCase } from './utils'
+import config from './config.json'
 
-const PATH_TO_SCHEMA_FILE = './schema.ts'
+const PATH_TO_SCHEMA_FILE = config.output
 
 const UNIQUE_IDENTIFIER_KEY = `declare const uniqueIdentifier: unique symbol`
 
@@ -77,10 +78,12 @@ export default () => {
 			const { type, name, options } = field
 			const multipleValues = options.isMultiple?.() ?? false
 
-			collectionInterfaces += newLine(
-				1,
-				generateDocString(field as SchemaFields, multipleValues, collectionIdToNameMap)
-			)
+			if (config.includeDocstring) {
+				collectionInterfaces += newLine(
+					1,
+					generateDocString(field as SchemaFields, multipleValues, collectionIdToNameMap)
+				)
+			}
 
 			if (type === 'select') {
 				const selectOptions = options.values.map((v: string) => `'${v}'`).join(' | ')

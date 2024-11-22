@@ -1,8 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const generate_docs_1 = require("./generate-docs");
 const utils_1 = require("./utils");
-const PATH_TO_SCHEMA_FILE = './schema.ts';
+const config_json_1 = __importDefault(require("./config.json"));
+const PATH_TO_SCHEMA_FILE = config_json_1.default.output;
 const UNIQUE_IDENTIFIER_KEY = `declare const uniqueIdentifier: unique symbol`;
 const UNIQUE_IDENTIFIER = `
 	/**
@@ -55,7 +59,9 @@ exports.default = () => {
         for (const field of collection.schema.fields()) {
             const { type, name, options } = field;
             const multipleValues = (_b = (_a = options.isMultiple) === null || _a === void 0 ? void 0 : _a.call(options)) !== null && _b !== void 0 ? _b : false;
-            collectionInterfaces += (0, utils_1.newLine)(1, (0, generate_docs_1.generateDocString)(field, multipleValues, collectionIdToNameMap));
+            if (config_json_1.default.includeDocstring) {
+                collectionInterfaces += (0, utils_1.newLine)(1, (0, generate_docs_1.generateDocString)(field, multipleValues, collectionIdToNameMap));
+            }
             if (type === 'select') {
                 const selectOptions = options.values.map((v) => `'${v}'`).join(' | ');
                 const field = `${name}: ${multipleValues ? `(${selectOptions})[]` : selectOptions}`;
