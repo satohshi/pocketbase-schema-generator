@@ -4,6 +4,7 @@
 	"description": "JS hooks for PocketBase to help you with schema generation for pocketbase-ts package during development",
 	"author": "satohshi",
 	"license": "MIT",
+	"private": true,
 	"scripts": {
 		"dev": "tsc -w --outDir ./pb/pb_hooks/",
 		"build": "tsc --outDir ./pb_hooks/",
