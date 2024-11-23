@@ -58,14 +58,16 @@ export default () => {
 	)
 
 	// interfaces
-	let addedUniqueKey = false
-	let collectionInterfaces =
-		newLine(0, BASE_COLLECTION_INTERFACE, 2) +
-		newLine(0, AUTH_COLLECTION_INTERFACE, 2) +
-		newLine(0, VIEW_COLLECTION_INTERFACE, 2)
+	let header = newLine(0, BASE_COLLECTION_INTERFACE, 2) + newLine(0, AUTH_COLLECTION_INTERFACE, 2)
+	let collectionInterfaces = ''
 	const fieldSets: Set<string>[] = []
 	for (const collection of allCollections) {
 		const fields = new Set<string>()
+
+		// only add view interface if needed
+		if (collection.type === 'view' && !header.includes(VIEW_COLLECTION_INTERFACE)) {
+			header += newLine(0, VIEW_COLLECTION_INTERFACE, 2)
+		}
 
 		collectionInterfaces += newLine(
 			0,
@@ -105,9 +107,8 @@ export default () => {
 		// add unique identifier if there are collections with the same set of fields
 		if (fieldSets.some((set) => haveSameValues(set, fields))) {
 			// add unique identifier at the top if there are collections with the same set of fields
-			if (!addedUniqueKey) {
-				collectionInterfaces = newLine(0, UNIQUE_IDENTIFIER_KEY, 2) + collectionInterfaces
-				addedUniqueKey = true
+			if (!header.includes(UNIQUE_IDENTIFIER_KEY)) {
+				header = newLine(0, UNIQUE_IDENTIFIER_KEY, 2) + header
 			}
 			collectionInterfaces += newLine(1, UNIQUE_IDENTIFIER)
 		}
@@ -116,6 +117,7 @@ export default () => {
 
 		fieldSets.push(fields)
 	}
+	collectionInterfaces = header + collectionInterfaces
 
 	// relations
 	const collectionToRelationMap: Record<string, string[]> = {}
