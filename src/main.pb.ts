@@ -1,5 +1,3 @@
-/// <reference path="../pb/pb_data/types.d.ts" />
-
 onAfterBootstrap(() => {
 	require(`${__hooks}/generate-schema.js`).default()
 })

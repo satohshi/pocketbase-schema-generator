@@ -1,5 +1,3 @@
-/// <reference path="../pb/pb_data/types.d.ts" />
-
 import { SchemaFields, generateDocString } from './generate-docs'
 import { haveSameValues, newLine, toPascalCase } from './utils'
 import config from './config.json'
