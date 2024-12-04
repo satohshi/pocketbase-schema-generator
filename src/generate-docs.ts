@@ -1,138 +1,53 @@
-interface BaseSchemaFields {
-	system: boolean
-	id: string
-	name: string
-	required: boolean
-	presentable: boolean
-	unique: boolean
-}
-
-interface TextSchemaFields extends BaseSchemaFields {
-	type: 'text'
-	options: {
-		min: number | null
-		max: number | null
-		pattern: string
-	}
-}
-
-interface EditorSchemaFields extends BaseSchemaFields {
-	type: 'editor'
-	options: {
-		convertUrls: boolean
-	}
-}
-
-interface NumberSchemaFields extends BaseSchemaFields {
-	type: 'number'
-	options: {
-		min: number | null
-		max: number | null
-		noDecimal: boolean
-	}
-}
-
-interface BoolSchemaFields extends BaseSchemaFields {
-	type: 'bool'
-	options: {}
-}
-
-interface EmailSchemaFields extends BaseSchemaFields {
-	type: 'email'
-	options: {
-		exceptDomains: string[] | null
-		onlyDomains: string[] | null
-	}
-}
-
-interface UrlSchemaFields extends BaseSchemaFields {
-	type: 'url'
-	options: {
-		exceptDomains: string[] | null
-		onlyDomains: string[] | null
-	}
-}
-
-interface DateSchemaFields extends BaseSchemaFields {
-	type: 'date'
-	options: {
-		min: string
-		max: string
-	}
-}
-
-interface SelectSchemaFields extends BaseSchemaFields {
-	type: 'select'
-	options: {
-		maxSelect: number
-		values: string[]
-		isMultiple: () => boolean
-	}
-}
-
-interface FileSchemaFields extends BaseSchemaFields {
-	type: 'file'
-	options: {
-		mimeTypes: string[]
-		thumbs: string[]
-		maxSelect: number
-		maxSize: number
-		protected: boolean
-		isMultiple: () => boolean
-	}
-}
-
-interface RelationSchemaFields extends BaseSchemaFields {
-	type: 'relation'
-	options: {
-		collectionId: string
-		cascadeDelete: boolean
-		minSelect: number | null
-		maxSelect: number | null
-		displayFields: string[] | null
-		isMultiple: () => boolean
-	}
-}
-
-interface JsonSchemaFields extends BaseSchemaFields {
-	type: 'json'
-	options: {
-		maxSize: number
-	}
-}
-
-export type SchemaFields =
-	| TextSchemaFields
-	| EditorSchemaFields
-	| NumberSchemaFields
-	| BoolSchemaFields
-	| EmailSchemaFields
-	| UrlSchemaFields
-	| DateSchemaFields
-	| SelectSchemaFields
-	| FileSchemaFields
-	| RelationSchemaFields
-	| JsonSchemaFields
+export type SchemaField =
+	| TextField
+	| EditorField
+	| NumberField
+	| BoolField
+	| EmailField
+	| URLField
+	| DateField
+	| SelectField
+	| FileField
+	| RelationField
+	| JSONField
 
 export const generateDocString = (
-	options: SchemaFields,
+	field: SchemaField,
 	multiple: boolean,
 	collectionMap: Record<string, string>
 ): string => {
+	const type = field.type()
+
 	// remove options that are not needed in the table
-	const optionEntries = Object.entries(options.options)
+	const optionEntries = Object.entries(field)
 		.filter(([key, value]) => {
-			const unnecessaryKeys = ['isMultiple', 'validate', 'displayFields', 'values']
+			const unnecessaryKeys = [
+				'id',
+				'name',
+				'system',
+				'presentable',
+				'values',
+				'primaryKey',
+				'cost',
+			]
 			if (!multiple) {
 				unnecessaryKeys.push('maxSelect', 'minSelect')
 			}
+
+			const isFunction = typeof value === 'function'
 
 			// value of `min` and `max` is of type `object`, not array, string, or number
 			const hasValue =
 				value !== null &&
 				(Array.isArray(value) ? value.length > 0 : value.toString() !== '')
 
-			return hasValue && !unnecessaryKeys.includes(key)
+			// `0` means not defined in these cases
+			const notDefined =
+				type !== 'number' &&
+				['max', 'min', 'maxSize', 'minSelect', 'maxSelect'].includes(key) &&
+				value === 0
+
+			return !isFunction && hasValue && !notDefined && !unnecessaryKeys.includes(key)
 		})
 		// wrap values in backticks
 		.map<[string, string]>(([key, value]) => {
@@ -142,24 +57,20 @@ export const generateDocString = (
 			return [key, `\`${value}\``]
 		})
 
-	const typeNameStr = `\`${options.type}${
-		['file', 'relation', 'select'].includes(options.type)
-			? multiple
-				? '(multiple)'
-				: '(single)'
-			: ''
+	const typeNameStr = `\`${type}${
+		['file', 'relation', 'select'].includes(type) ? (multiple ? '(multiple)' : '(single)') : ''
 	}\``
-	const requiredStr = `\`${options.required}\``
+	const requiredStr = `\`${field.required}\``
 	const relatedCollectionNameStr =
-		options.type === 'relation' ? `\`${collectionMap[options.options.collectionId]}\`` : ''
+		type === 'relation' ? `\`${collectionMap[(field as RelationField).collectionId]}\`` : ''
 
 	// column width
 	const leftColWidth = Math.max(
-		options.type === 'relation' ? 14 : 8, // length of `collectionName` is 14
+		type === 'relation' ? 14 : 8, // length of `collectionName` is 14
 		...optionEntries.map(([key]) => key.length)
 	)
 	const rightColWidth = Math.max(
-		options.type === 'relation' ? 15 : 0, // id length
+		type === 'relation' ? 15 : 0, // id length
 		relatedCollectionNameStr.length, // collection name length
 		typeNameStr.length,
 		requiredStr.length,
@@ -171,7 +82,6 @@ export const generateDocString = (
 		`| ${' '.repeat(leftColWidth)} | ${' '.repeat(rightColWidth)} |`,
 		`| ${'-'.repeat(leftColWidth)} | ${'-'.repeat(rightColWidth)} |`,
 		`| ${'type'.padEnd(leftColWidth, ' ')} | ${typeNameStr.padEnd(rightColWidth, ' ')} |`,
-		`| ${'required'.padEnd(leftColWidth, ' ')} | ${requiredStr.padEnd(rightColWidth, ' ')} |`,
 	]
 
 	for (const [key, value] of optionEntries) {

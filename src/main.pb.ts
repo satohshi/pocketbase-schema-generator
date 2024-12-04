@@ -1,15 +1,19 @@
-onAfterBootstrap(() => {
+onBootstrap((e) => {
+	e.next()
 	require(`${__hooks}/generate-schema.js`).default()
 })
 
-onCollectionAfterCreateRequest(() => {
+onCollectionCreateRequest((e) => {
+	e.next()
 	require(`${__hooks}/generate-schema.js`).default()
 })
 
-onCollectionAfterUpdateRequest(() => {
+onCollectionUpdateRequest((e) => {
+	e.next()
 	require(`${__hooks}/generate-schema.js`).default()
 })
 
-onCollectionAfterDeleteRequest(() => {
+onCollectionDeleteRequest((e) => {
+	e.next()
 	require(`${__hooks}/generate-schema.js`).default()
 })
