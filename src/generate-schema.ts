@@ -1,5 +1,5 @@
 import { SchemaField, generateDocString } from './generate-docs'
-import { haveSameValues, newLine, toPascalCase } from './utils'
+import { format, haveSameValues, toPascalCase } from './utils'
 import config from './config.json'
 
 const PATH_TO_SCHEMA_FILE = config.output
@@ -7,11 +7,11 @@ const PATH_TO_SCHEMA_FILE = config.output
 const UNIQUE_IDENTIFIER_KEY = `declare const uniqueIdentifier: unique symbol`
 
 const UNIQUE_IDENTIFIER = `
-	/**
-	 * This is a unique identifier to help TypeScript differentiate this interface from others sharing the same properties.
-	 * Refer to https://github.com/satohshi/pocketbase-ts#dealing-with-tables-with-exactly-the-same-properties for more information.
-	 */
-	readonly [uniqueIdentifier]: unique symbol
+/**
+ * This is a unique identifier to help TypeScript differentiate this interface from others sharing the same properties.
+ * Refer to https://github.com/satohshi/pocketbase-ts#dealing-with-tables-with-exactly-the-same-properties for more information.
+ */
+readonly [uniqueIdentifier]: unique symbol
 `
 
 const TYPE_MAP: Record<string, string> = {
@@ -34,7 +34,7 @@ export default () => {
 	for (const collection of allCollections) {
 		const fields = new Set<string>()
 
-		collectionInterfaces += newLine(0, `export interface ${toPascalCase(collection.name)} {`)
+		collectionInterfaces += `export interface ${toPascalCase(collection.name)} {\n`
 
 		for (const fieldOptions of collection.fields as Array<core.Field>) {
 			const name = fieldOptions.name
@@ -42,43 +42,37 @@ export default () => {
 			const multipleValues = fieldOptions.isMultiple?.() ?? false
 
 			if (config.includeDocstring) {
-				collectionInterfaces += newLine(
-					1,
+				collectionInterfaces +=
 					generateDocString(
 						fieldOptions as SchemaField,
 						multipleValues,
 						collectionIdToNameMap
-					)
-				)
+					) + '\n'
 			}
 
+			let field: string
 			if (type === 'select') {
 				const selectOptions = fieldOptions.values.map((v: string) => `'${v}'`).join(' | ')
-
-				const field = `${name}: ${multipleValues ? `(${selectOptions})[]` : selectOptions}`
-				fields.add(field)
-
-				collectionInterfaces += newLine(1, field)
+				field = `${name}: ${multipleValues ? `(${selectOptions})[]` : selectOptions}`
 			} else {
 				const fieldType = TYPE_MAP[type] ?? 'string'
-
-				const field = `${name}: ${fieldType}${multipleValues ? '[]' : ''}`
-				fields.add(field)
-
-				collectionInterfaces += newLine(1, field)
+				field = `${name}: ${fieldType}${multipleValues ? '[]' : ''}`
 			}
+
+			fields.add(field)
+			collectionInterfaces += field + '\n'
 		}
 
 		// add unique identifier if there are collections with the same set of fields
 		if (fieldSets.some((set) => haveSameValues(set, fields))) {
 			// add unique identifier at the top if there are collections with the same set of fields
 			if (!collectionInterfaces.includes(UNIQUE_IDENTIFIER_KEY)) {
-				collectionInterfaces = newLine(0, UNIQUE_IDENTIFIER_KEY, 2) + collectionInterfaces
+				collectionInterfaces = UNIQUE_IDENTIFIER_KEY + '\n\n' + collectionInterfaces
 			}
-			collectionInterfaces += newLine(1, UNIQUE_IDENTIFIER)
+			collectionInterfaces += UNIQUE_IDENTIFIER
 		}
 
-		collectionInterfaces += newLine(0, '}', 2)
+		collectionInterfaces += '}\n\n'
 
 		fieldSets.push(fields)
 	}
@@ -95,6 +89,7 @@ export default () => {
 		for (const fieldSchema of collection.fields as Array<core.Field>) {
 			// has to be outside if block for collections without relations
 			collectionToRelationMap[collection.name] ??= []
+
 			if (fieldSchema.type() === 'relation') {
 				const isOptional = !fieldSchema.required
 				const isToMany = fieldSchema.isMultiple()
@@ -130,23 +125,24 @@ export default () => {
  * See [here](https://github.com/satohshi/pocketbase-ts#back-relations) for more information.
  */
 `
-	schemaText += newLine(0, 'export type Schema = {')
+	schemaText += 'export type Schema = {\n'
 	for (const [collection, relations] of Object.entries(collectionToRelationMap)) {
-		schemaText += newLine(1, `${collection}: {`)
-		schemaText += newLine(2, `type: ${toPascalCase(collection)}`)
+		schemaText += `${collection}: {\n`
+		schemaText += `type: ${toPascalCase(collection)}\n`
 
 		if (relations.length) {
-			schemaText += newLine(2, `relations: {`)
+			schemaText += `relations: {\n`
 
 			for (const relation of relations) {
-				schemaText += newLine(3, relation)
+				schemaText += relation + '\n'
 			}
 
-			schemaText += newLine(2, `}`)
+			schemaText += `}\n`
 		}
-		schemaText += newLine(1, `}`)
+		schemaText += `}\n`
 	}
-	schemaText += newLine(0, `}`)
+	schemaText += `}\n`
 
-	$os.writeFile(PATH_TO_SCHEMA_FILE, collectionInterfaces + schemaText, 0o644 as any)
+	const data = format(collectionInterfaces + schemaText)
+	$os.writeFile(PATH_TO_SCHEMA_FILE, data, 0o644 as any)
 }

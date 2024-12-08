@@ -1,3 +1,5 @@
+import { generateMDTable } from './utils'
+
 export type SchemaField =
 	| TextField
 	| EditorField
@@ -57,41 +59,28 @@ export const generateDocString = (
 			return [key, `\`${value}\``]
 		})
 
-	const typeNameStr = `\`${type}${
-		['file', 'relation', 'select'].includes(type) ? (multiple ? '(multiple)' : '(single)') : ''
-	}\``
-	const requiredStr = `\`${field.required}\``
-	const relatedCollectionNameStr =
-		type === 'relation' ? `\`${collectionMap[(field as RelationField).collectionId]}\`` : ''
-
-	// column width
-	const leftColWidth = Math.max(
-		type === 'relation' ? 14 : 8, // length of `collectionName` is 14
-		...optionEntries.map(([key]) => key.length)
-	)
-	const rightColWidth = Math.max(
-		type === 'relation' ? 15 : 0, // id length
-		relatedCollectionNameStr.length, // collection name length
-		typeNameStr.length,
-		requiredStr.length,
-		...optionEntries.map(([_, value]) => value.length)
-	)
-
-	const rows = [
-		`/**`,
-		`| ${' '.repeat(leftColWidth)} | ${' '.repeat(rightColWidth)} |`,
-		`| ${'-'.repeat(leftColWidth)} | ${'-'.repeat(rightColWidth)} |`,
-		`| ${'type'.padEnd(leftColWidth, ' ')} | ${typeNameStr.padEnd(rightColWidth, ' ')} |`,
+	const rows: [string, string][] = [
+		[
+			'type',
+			`\`${type}${
+				['file', 'relation', 'select'].includes(type)
+					? multiple
+						? '(multiple)'
+						: '(single)'
+					: ''
+			}\``,
+		],
 	]
 
 	for (const [key, value] of optionEntries) {
-		rows.push(`| ${key.padEnd(leftColWidth, ' ')} | ${value.padEnd(rightColWidth, ' ')} |`)
+		rows.push([key, value])
 
 		// add collection name for relation type
 		if (key === 'collectionId') {
-			rows.push(`| collectionName | ${relatedCollectionNameStr.padEnd(rightColWidth, ' ')} |`)
+			const collectionName = collectionMap[(field as RelationField).collectionId]!
+			rows.push(['collectionName', `\`${collectionName}\``])
 		}
 	}
 
-	return rows.join('\n     * ') + '\n     */'
+	return generateMDTable(rows)
 }
