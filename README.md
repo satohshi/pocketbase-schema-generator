@@ -4,7 +4,7 @@ JS hook for PocketBase to help you with schema generation for [pocketbase-ts](ht
 
 ## Usage
 
-1. Download `pb_hooks.zip` from releases and extract it to the directory where you have the PocketBase executable.
+1. Download `pb_hooks.zip` from [releases](https://github.com/satohshi/pocketbase-ts-schema-generator/releases) and extract it to the directory where you have the PocketBase executable.
 2. Update `config.json` if necessary.
 3. Run `pocketbase serve`, and the hooks will automatically generate/update the schema file on bootstrap, and every time you make changes to the collections.
 
