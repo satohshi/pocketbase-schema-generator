@@ -2,8 +2,6 @@ import { SchemaField, generateDocString } from './generate-docs'
 import { format, haveSameValues, toPascalCase } from './utils'
 import config from './config.json'
 
-const PATH_TO_SCHEMA_FILE = config.output
-
 const UNIQUE_IDENTIFIER_KEY = `declare const uniqueIdentifier: unique symbol`
 
 const UNIQUE_IDENTIFIER = `
@@ -144,5 +142,5 @@ export default () => {
 	schemaText += `}\n`
 
 	const data = format(collectionInterfaces + schemaText)
-	$os.writeFile(PATH_TO_SCHEMA_FILE, data, 0o644 as any)
+	$os.writeFile(config.output, data, 0o644 as any)
 }
