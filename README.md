@@ -12,7 +12,7 @@ The generated schema will have field options in docstrings, so you will get addi
 
 ## Configuration Options
 
-| Key                | Description                                     |    Default    |
-| ------------------ | ----------------------------------------------- | :-----------: |
-| `output`           | Where to save the generated schema file.        | `./schema.ts` |
-| `includeDocstring` | Whether to include field options in docstrings. |    `true`     |
+| Key           | Description                                     |    Default    |
+| ------------- | ----------------------------------------------- | :-----------: |
+| `outputPath`  | Where to save the generated schema file.        | `./schema.ts` |
+| `includeDocs` | Whether to include field options in docstrings. |    `true`     |

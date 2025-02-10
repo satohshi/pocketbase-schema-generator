@@ -39,7 +39,7 @@ export default () => {
 			const type = fieldOptions.type()
 			const multipleValues = fieldOptions.isMultiple?.() ?? false
 
-			if (config.includeDocstring) {
+			if (config.includeDocs) {
 				collectionInterfaces +=
 					generateDocString(
 						fieldOptions as SchemaField,
@@ -142,5 +142,5 @@ export default () => {
 	schemaText += `}\n`
 
 	const data = format(collectionInterfaces + schemaText)
-	$os.writeFile(config.output, data, 0o644 as any)
+	$os.writeFile(config.outputPath, data, 0o644 as any)
 }

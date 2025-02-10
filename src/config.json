@@ -1,4 +1,4 @@
 {
-	"output": "./schema.ts",
-	"includeDocstring": true
+	"outputPath": "./schema.ts",
+	"includeDocs": true
 }
