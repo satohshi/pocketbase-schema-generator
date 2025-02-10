@@ -1,4 +1,8 @@
 {
+	"includeDocs": true,
+	"generateFile": true,
 	"outputPath": "./schema.ts",
-	"includeDocs": true
+	"exposeEndpoint": false,
+	"endpointPath": "/schema",
+	"secureEndpoint": true
 }

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Schema</title>
+		<style>
+			textarea {
+				display: block;
+			}
+
+			@supports (field-sizing: content) {
+				textarea {
+					field-sizing: content;
+					resize: none;
+				}
+			}
+
+			@supports not (field-sizing: content) {
+				textarea {
+					height: 90vh;
+					width: 100%;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<button onclick="copySchema()">Copy</button>
+		<button onclick="downloadSchema()">Download</button>
+		{{ if .showLogOut }}<a href="/logout">Log Out</a>{{ end }}
+
+		<textarea id="schema" readonly>{{ .schema }}</textarea>
+
+		<script>
+			const schema = document.getElementById('schema').value
+
+			function copySchema() {
+				navigator.clipboard.writeText(schema).then(() => alert('Copied to clipboard'))
+			}
+
+			function downloadSchema() {
+				const blob = new Blob([schema], { type: 'text/plain' })
+				const url = URL.createObjectURL(blob)
+				const a = document.createElement('a')
+				a.href = url
+				a.download = 'schema.ts'
+				a.click()
+				URL.revokeObjectURL(url)
+			}
+		</script>
+	</body>
+</html>

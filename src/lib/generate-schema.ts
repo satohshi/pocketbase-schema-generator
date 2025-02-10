@@ -1,6 +1,6 @@
 import { SchemaField, generateDocString } from './generate-docs'
 import { format, haveSameValues, toPascalCase } from './utils'
-import config from './config.json'
+import config from '../config.json'
 
 const UNIQUE_IDENTIFIER_KEY = `declare const uniqueIdentifier: unique symbol`
 
@@ -19,7 +19,7 @@ const TYPE_MAP: Record<string, string> = {
 	// everything else is "string"
 }
 
-export default () => {
+export const generateSchema = () => {
 	const allCollections = $app.findAllCollections() as Array<core.Collection>
 
 	const collectionIdToNameMap = Object.fromEntries(
@@ -141,6 +141,10 @@ export default () => {
 	}
 	schemaText += `}\n`
 
-	const data = format(collectionInterfaces + schemaText)
+	return format(collectionInterfaces + schemaText)
+}
+
+export const writeSchemaToFile = () => {
+	const data = generateSchema()
 	$os.writeFile(config.outputPath, data, 0o644 as any)
 }
