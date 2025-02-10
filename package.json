@@ -7,7 +7,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "tsc -w --outDir ./pb/pb_hooks/",
-		"build": "tsc --outDir ./pb_hooks/ && node -e \"require('fs-extra').copySync('./src/views/', './pb_hooks/views/')\"",
+		"build": "tsc --outDir ./pb_hooks/ && node -e \"require('fs').cpSync('./src/views/', './pb_hooks/views/', {recursive: true})\"",
 		"lint": "tsc --noEmit && prettier --check .",
 		"format": "prettier --write .",
 		"test": "vitest"
