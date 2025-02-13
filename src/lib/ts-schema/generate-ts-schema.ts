@@ -30,6 +30,10 @@ export const generateTsSchema = () => {
 	let collectionInterfaces = ''
 	const fieldSets: Set<string>[] = []
 	for (const collection of allCollections) {
+		if (!config.tsSchema.includeSystemCollections && collection.system) {
+			continue
+		}
+
 		const fields = new Set<string>()
 
 		collectionInterfaces += `export interface ${toPascalCase(collection.name)} {\n`
@@ -78,6 +82,10 @@ export const generateTsSchema = () => {
 	// relations
 	const collectionToRelationMap: Record<string, string[]> = {}
 	for (const collection of allCollections) {
+		if (!config.tsSchema.includeSystemCollections && collection.system) {
+			continue
+		}
+
 		const fieldsWithUniqueIndex = new Set(
 			collection.indexes
 				.filter((index) => index.includes('UNIQUE') && !index.includes(','))

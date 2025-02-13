@@ -30,6 +30,10 @@ export const generateZodSchema = () => {
 
 	let schema = ''
 	for (const collection of allCollections) {
+		if (!config.zodSchema.includeSystemCollections && collection.system) {
+			continue
+		}
+
 		schema += `export const ${toCamelCase(collection.name)}Schema = z.object({\n`
 
 		for (const fieldOptions of collection.fields as Array<core.Field>) {

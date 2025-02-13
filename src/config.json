@@ -6,10 +6,13 @@
 	"tsSchema": {
 		"generateFile": true,
 		"includeDocs": true,
+		"includeSystemCollections": false,
 		"outputPath": "./tsSchema.ts"
 	},
+
 	"zodSchema": {
 		"generateFile": true,
+		"includeSystemCollections": false,
 		"outputPath": "./zodSchema.ts"
 	}
 }
