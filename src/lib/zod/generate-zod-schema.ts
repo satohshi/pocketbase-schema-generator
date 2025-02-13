@@ -16,9 +16,11 @@ import {
 import config from '../../config.json'
 import { toCamelCase } from '../utils'
 
-const DATETIME_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?Z$/
+export const DATETIME_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?Z$/
 
-export const generateZodSchema = () => {
+export const generateZodSchema = (
+	includeSystemCollections = config.zodSchema.includeSystemCollections
+) => {
 	let shouldAddDateRegex = false
 	const allCollections = $app.findAllCollections() as Array<core.Collection>
 	const collectionIdToIdSchemaMap = new Map(
@@ -30,9 +32,7 @@ export const generateZodSchema = () => {
 
 	let schema = ''
 	for (const collection of allCollections) {
-		if (!config.zodSchema.includeSystemCollections && collection.system) {
-			continue
-		}
+		if (!includeSystemCollections && collection.system) continue
 
 		schema += `export const ${toCamelCase(collection.name)}Schema = z.object({\n`
 
