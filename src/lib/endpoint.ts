@@ -27,6 +27,6 @@ export function secureEndpointHandler(e: core.RequestEvent): void {
 
 export function logout(e: core.RequestEvent): void {
 	const pathname = config.endpointPath
-	const html = $template.loadFiles(`${__hooks}/views/logged-out.html`).render(pathname)
+	const html = $template.loadFiles(`${__hooks}/views/logged-out.html`).render({ pathname })
 	return e.html(401, html)
 }
