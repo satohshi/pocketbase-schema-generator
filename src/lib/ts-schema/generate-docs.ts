@@ -1,4 +1,4 @@
-import { generateMDTable } from './utils'
+import { generateMDTable } from '../utils'
 
 export type SchemaField =
 	| TextField

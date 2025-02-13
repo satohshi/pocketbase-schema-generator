@@ -1,5 +1,5 @@
 import config from '../config.json'
-import { generateSchema } from './generate-schema.js'
+import { generateSchema } from './ts-schema/generate-ts-schema.js'
 
 export function renderSchema(e: core.RequestEvent, showLogOut: boolean) {
 	const schema = generateSchema()

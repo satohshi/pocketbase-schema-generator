@@ -1,6 +1,6 @@
 import { SchemaField, generateDocString } from './generate-docs'
-import { format, haveSameValues, toPascalCase } from './utils'
-import config from '../config.json'
+import { format, haveSameValues, toPascalCase } from '../utils'
+import config from '../../config.json'
 
 const UNIQUE_IDENTIFIER_KEY = `declare const uniqueIdentifier: unique symbol`
 
