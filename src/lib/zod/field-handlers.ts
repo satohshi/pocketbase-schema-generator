@@ -1,5 +1,4 @@
-export function textFieldSchema(fieldOptions: TextField) {
-	const { name, pattern, min, max } = fieldOptions
+export function textFieldSchema({ name, pattern, min, max, required }: TextField) {
 	let schema = `${name}: z.string()`
 
 	if (pattern) {
@@ -9,37 +8,40 @@ export function textFieldSchema(fieldOptions: TextField) {
 	if (min > 0 && min === max) {
 		schema += `.length(${min})`
 	} else {
-		if (min > 0) schema += `.min(${min})`
+		if (min > 0) {
+			schema += `.min(${min})`
+		} else if (required) {
+			schema += '.min(1)'
+		}
 		if (max > 0) schema += `.max(${max})`
 	}
 
 	return schema
 }
 
-export function editorFieldSchema(fieldOptions: EditorField) {
-	return `${fieldOptions.name}: z.string()`
+export function editorFieldSchema({ name, required }: EditorField) {
+	return `${name}: z.string()${required ? '.min(1)' : ''}`
 }
 
-export function numberFieldSchema(fieldOptions: NumberField) {
-	const { name, onlyInt, min, max } = fieldOptions
+export function numberFieldSchema({ name, onlyInt, min, max, required }: NumberField) {
 	let schema = `${name}: z.number()`
 
 	if (onlyInt) schema += '.int()'
 	if (min) schema += `.min(${min})`
 	if (max) schema += `.max(${max})`
+	if (required) schema += '.refine((n) => n !== 0)' // `required` === `nonZero`
 
 	return schema
 }
 
-export function boolFieldSchema(fieldOptions: BoolField) {
-	if (fieldOptions.required) {
-		return `${fieldOptions.name}: z.literal(true)`
+export function boolFieldSchema({ name, required }: BoolField) {
+	if (required) {
+		return `${name}: z.literal(true)`
 	}
-	return `${fieldOptions.name}: z.boolean()`
+	return `${name}: z.boolean()`
 }
 
-export function emailFieldSchema(fieldOptions: EmailField) {
-	const { name, exceptDomains, onlyDomains } = fieldOptions
+export function emailFieldSchema({ name, exceptDomains, onlyDomains }: EmailField) {
 	let schema = `${name}: z.string().email()`
 
 	if (onlyDomains.length > 0) {
@@ -51,33 +53,33 @@ export function emailFieldSchema(fieldOptions: EmailField) {
 	return schema
 }
 
-export function urlFieldSchema(fieldOptions: URLField) {
-	let schema = `${fieldOptions.name}: z.string().url()`
-	const { exceptDomains, onlyDomains } = fieldOptions
+export function urlFieldSchema({ name, exceptDomains, onlyDomains }: URLField) {
+	let schema = `${name}: z.string().url()`
 	if (onlyDomains.length > 0) {
 		schema += `.refine((v) => [${onlyDomains.map((d) => `"${d}"`).join(', ')}].some((domain) => v.includes(domain)))`
 	} else if (exceptDomains.length > 0) {
 		schema += `.refine((v) => [${exceptDomains.map((d) => `"${d}"`).join(', ')}].every((domain) => !v.includes(domain)))`
 	}
+
 	return schema
 }
 
-export function dateFieldSchema(fieldOptions: DateField) {
-	let schema = `${fieldOptions.name}: z.string().regex(DATETIME_REGEX)`
-	const min = fieldOptions.min.string()
-	const max = fieldOptions.max.string()
+export function dateFieldSchema({ name, min, max }: DateField) {
+	let schema = `${name}: z.string().regex(DATETIME_REGEX)`
+	const minDateStr = min.string()
+	const maxDateStr = max.string()
 
-	if (!min && !max) return schema
+	if (!minDateStr && !maxDateStr) return schema
 
 	const conditions: string[] = []
 	const funcLines: string[] = [`const date = new Date(v)`]
 
-	if (min) {
-		funcLines.push(`const minDate = new Date('${min}')`)
+	if (minDateStr) {
+		funcLines.push(`const minDate = new Date('${minDateStr}')`)
 		conditions.push('date >= minDate')
 	}
-	if (max) {
-		funcLines.push(`const maxDate = new Date('${max}')`)
+	if (maxDateStr) {
+		funcLines.push(`const maxDate = new Date('${maxDateStr}')`)
 		conditions.push('date <= maxDate')
 	}
 
@@ -90,43 +92,46 @@ ${funcLines.map((line) => `        ${line}`).join('\n')}
 	)
 }
 
-export function selectFieldSchema(fieldOptions: SelectField) {
-	const isMultiple = fieldOptions.isMultiple()
-	const { name, values, maxSelect } = fieldOptions
-	const schema = `${name}: z.enum([${values.map((v) => `"${v}"`).join(', ')}])${isMultiple ? '.array()' : ''}`
-	if (isMultiple && maxSelect) {
-		return `${schema}.max(${maxSelect})`
+export function selectFieldSchema({ name, values, maxSelect, required, isMultiple }: SelectField) {
+	let schema = `${name}: z.enum([${values.map((v) => `"${v}"`).join(', ')}])`
+	if (isMultiple()) {
+		schema += '.array()'
+		if (required) schema += '.nonempty()'
+		if (maxSelect) schema += `.max(${maxSelect})`
 	}
 	return schema
 }
 
-export function fileFieldSchema(fieldOptions: FileField) {
-	const { name, maxSelect } = fieldOptions
-	const baseSchema = `${name}: z.string()`
-
-	if (fieldOptions.isMultiple()) {
-		return `${baseSchema}.array()${maxSelect ? `.max(${maxSelect})` : ''}`
-	}
-
-	return baseSchema
-}
-
-export function relationFieldSchema(fieldOptions: RelationField, baseIdSchema: string) {
-	let schema = `${fieldOptions.name}: ${baseIdSchema}`
-	const isMultiple = fieldOptions.isMultiple()
-	if (isMultiple) {
-		const maxSelect = fieldOptions.maxSelect
-		schema += `.array()${maxSelect ? `.max(${maxSelect})` : ''}`
+export function fileFieldSchema({ name, maxSelect, required, isMultiple }: FileField) {
+	let schema = `${name}: z.string()`
+	if (isMultiple()) {
+		schema += '.array()'
+		if (required) schema += '.nonempty()'
+		if (maxSelect) schema += `.max(${maxSelect})`
 	}
 	return schema
 }
 
-export function jsonFieldSchema(fieldOptions: JSONField) {
-	return `${fieldOptions.name}: z.unknown()`
+export function relationFieldSchema(
+	{ name, minSelect, maxSelect, required, isMultiple }: RelationField,
+	targetCollectionIdSchema: string
+) {
+	let schema = `${name}: ${targetCollectionIdSchema}`
+	if (isMultiple()) {
+		schema += '.array()'
+		if (required) schema += '.nonempty()'
+		if (minSelect) schema += `.min(${minSelect})`
+		if (maxSelect) schema += `.max(${maxSelect})`
+	}
+	return schema
 }
 
-export function autodateFieldSchema(fieldOptions: AutodateField) {
-	return `${fieldOptions.name}: z.string().regex(DATETIME_REGEX)`
+export function jsonFieldSchema({ name }: JSONField) {
+	return `${name}: z.unknown()`
+}
+
+export function autodateFieldSchema({ name }: AutodateField) {
+	return `${name}: z.string().regex(DATETIME_REGEX)`
 }
 
 export function passwordFieldSchema(fieldOptions: PasswordField) {
