@@ -6,11 +6,11 @@ export function textFieldSchema(fieldOptions: TextField) {
 		schema += `.regex(/${pattern}/)`
 	}
 
-	if (min !== undefined && min === max) {
+	if (min > 0 && min === max) {
 		schema += `.length(${min})`
 	} else {
-		if (min) schema += `.min(${min})`
-		if (max) schema += `.max(${max})`
+		if (min > 0) schema += `.min(${min})`
+		if (max > 0) schema += `.max(${max})`
 	}
 
 	return schema
