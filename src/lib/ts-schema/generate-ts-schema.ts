@@ -19,10 +19,10 @@ const TYPE_MAP: Record<string, string> = {
 	// everything else is "string"
 }
 
-export const generateSchema = () => {
+export const generateTsSchema = () => {
 	const allCollections = $app.findAllCollections() as Array<core.Collection>
 
-	const collectionIdToNameMap = Object.fromEntries(
+	const collectionIdToNameMap = new Map(
 		allCollections.map((collection) => [collection.id, collection.name])
 	)
 
@@ -39,7 +39,7 @@ export const generateSchema = () => {
 			const type = fieldOptions.type()
 			const multipleValues = fieldOptions.isMultiple?.() ?? false
 
-			if (config.includeDocs) {
+			if (config.tsSchema.includeDocs) {
 				collectionInterfaces +=
 					generateDocString(
 						fieldOptions as SchemaField,
@@ -92,7 +92,7 @@ export const generateSchema = () => {
 				const isOptional = !fieldSchema.required
 				const isToMany = fieldSchema.isMultiple()
 
-				const relatedCollectionName = collectionIdToNameMap[fieldSchema.collectionId]!
+				const relatedCollectionName = collectionIdToNameMap.get(fieldSchema.collectionId)!
 				const hasUniqueConstraint = fieldsWithUniqueIndex.has(fieldSchema.name)
 
 				// Forward relation
@@ -144,7 +144,7 @@ export const generateSchema = () => {
 	return format(collectionInterfaces + schemaText)
 }
 
-export const writeSchemaToFile = () => {
-	const data = generateSchema()
-	$os.writeFile(config.outputPath, data, 0o644 as any)
+export const writeTsSchemaToFile = () => {
+	const data = generateTsSchema()
+	$os.writeFile(config.tsSchema.outputPath, data, 0o644 as any)
 }

@@ -1,24 +1,22 @@
-if (require(`${__hooks}/config.json`).generateFile) {
-	onBootstrap((e) => {
-		e.next()
-		require(`${__hooks}/lib/generate-schema.js`).writeSchemaToFile()
-	})
+onBootstrap((e) => {
+	e.next()
+	require(`${__hooks}/handler.js`).default()
+})
 
-	onCollectionCreateRequest((e) => {
-		e.next()
-		require(`${__hooks}/lib/generate-schema.js`).writeSchemaToFile()
-	})
+onCollectionCreateRequest((e) => {
+	e.next()
+	require(`${__hooks}/handler.js`).default()
+})
 
-	onCollectionUpdateRequest((e) => {
-		e.next()
-		require(`${__hooks}/lib/generate-schema.js`).writeSchemaToFile()
-	})
+onCollectionUpdateRequest((e) => {
+	e.next()
+	require(`${__hooks}/handler.js`).default()
+})
 
-	onCollectionDeleteRequest((e) => {
-		e.next()
-		require(`${__hooks}/lib/generate-schema.js`).writeSchemaToFile()
-	})
-}
+onCollectionDeleteRequest((e) => {
+	e.next()
+	require(`${__hooks}/handler.js`).default()
+})
 
 if (require(`${__hooks}/config.json`).exposeEndpoint) {
 	if (require(`${__hooks}/config.json`).secureEndpoint) {

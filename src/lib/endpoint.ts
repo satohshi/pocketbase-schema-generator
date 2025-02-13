@@ -1,9 +1,13 @@
 import config from '../config.json'
-import { generateSchema } from './ts-schema/generate-ts-schema.js'
+import { generateTsSchema } from './ts-schema/generate-ts-schema.js'
+import { generateZodSchema } from './zod/generate-zod-schema'
 
 export function renderSchema(e: core.RequestEvent, showLogOut: boolean) {
-	const schema = generateSchema()
-	const html = $template.loadFiles(`${__hooks}/views/schema.html`).render({ schema, showLogOut })
+	const tsSchema = generateTsSchema()
+	const zodSchema = generateZodSchema()
+	const html = $template
+		.loadFiles(`${__hooks}/views/schema.html`)
+		.render({ tsSchema, zodSchema, showLogOut })
 	return e.html(200, html)
 }
 

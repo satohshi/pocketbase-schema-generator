@@ -5,6 +5,11 @@ export function toPascalCase(collectionName: string): string {
 		.join('')
 }
 
+export function toCamelCase(collectionName: string): string {
+	const pascalCase = toPascalCase(collectionName)
+	return pascalCase.charAt(0).toLowerCase() + pascalCase.slice(1)
+}
+
 export function haveSameValues(set1: Set<string>, set2: Set<string>): boolean {
 	if (set1.size !== set2.size) return false
 	return [...set1].every((value) => set2.has(value))
