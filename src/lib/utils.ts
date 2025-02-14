@@ -37,6 +37,8 @@ export const format = (input: string): string => {
 export const generateMDTable = (rows: [string, string][]): string => {
 	if (rows.length === 0) return ''
 
+	rows = rows.map(([key, value]) => [key, `\`${value}\``])
+
 	const leftColWidth = Math.max(...rows.map(([key]) => key.length))
 	const rightColWidth = Math.max(...rows.map(([_, value]) => value.length))
 

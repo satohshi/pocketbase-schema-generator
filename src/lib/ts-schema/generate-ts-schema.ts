@@ -1,9 +1,23 @@
-import { SchemaField, generateDocString } from './generate-docs'
 import { format, haveSameValues, toPascalCase } from '../utils'
 import config from '../../config.json'
+import { CollectionType } from '../types'
+import {
+	autodateFieldSchema,
+	boolFieldSchema,
+	dateFieldSchema,
+	editorFieldSchema,
+	emailFieldSchema,
+	fileFieldSchema,
+	jsonFieldSchema,
+	numberFieldSchema,
+	passwordFieldSchema,
+	relationFieldSchema,
+	selectFieldSchema,
+	textFieldSchema,
+	urlFieldSchema,
+} from './field-handlers'
 
 const UNIQUE_IDENTIFIER_KEY = `declare const uniqueIdentifier: unique symbol`
-
 const UNIQUE_IDENTIFIER = `
 /**
  * This is a unique identifier to help TypeScript differentiate this interface from others sharing the same properties.
@@ -12,62 +26,114 @@ const UNIQUE_IDENTIFIER = `
 readonly [uniqueIdentifier]: unique symbol
 `
 
-const TYPE_MAP: Record<string, string> = {
-	number: 'number',
-	bool: 'boolean',
-	json: 'any',
-	// everything else is "string"
-}
-
-export const generateTsSchema = () => {
+export const generateTsSchema = (
+	includeSystemCollections = config.zodSchema.includeSystemCollections
+) => {
 	const allCollections = $app.findAllCollections() as Array<core.Collection>
-
 	const collectionIdToNameMap = new Map(
 		allCollections.map((collection) => [collection.id, collection.name])
 	)
 
+	const fieldSets: Set<string>[] = []
+	const collectionToRelationMap: Record<string, string[]> = {}
+
 	// interfaces
 	let collectionInterfaces = ''
-	const fieldSets: Set<string>[] = []
 	for (const collection of allCollections) {
-		if (!config.tsSchema.includeSystemCollections && collection.system) {
-			continue
-		}
+		if (!includeSystemCollections && collection.system) continue
+
+		const fieldsWithUniqueIndex = new Set(
+			collection.indexes
+				.filter((index) => index.includes('UNIQUE') && !index.includes(','))
+				.map((index) => /^CREATE UNIQUE.+\(`?([^`\s]+).*\).*/.exec(index)![1])
+		)
 
 		const fields = new Set<string>()
-
 		collectionInterfaces += `export interface ${toPascalCase(collection.name)} {\n`
-
 		for (const fieldOptions of collection.fields as Array<core.Field>) {
-			const name = fieldOptions.name
-			const type = fieldOptions.type()
-			const multipleValues = fieldOptions.isMultiple?.() ?? false
+			collectionToRelationMap[collection.name] ??= []
 
-			if (config.tsSchema.includeDocs) {
-				collectionInterfaces +=
-					generateDocString(
-						fieldOptions as SchemaField,
-						multipleValues,
-						collectionIdToNameMap
-					) + '\n'
+			const type = fieldOptions.type() as CollectionType
+
+			let schema: [string, string]
+			switch (type) {
+				case 'text':
+					schema = textFieldSchema(fieldOptions as TextField)
+					break
+				case 'password':
+					schema = passwordFieldSchema(fieldOptions as PasswordField)
+					break
+				case 'editor':
+					schema = editorFieldSchema(fieldOptions as EditorField)
+					break
+				case 'number':
+					schema = numberFieldSchema(fieldOptions as NumberField)
+					break
+				case 'bool':
+					schema = boolFieldSchema(fieldOptions as BoolField)
+					break
+				case 'email':
+					schema = emailFieldSchema(fieldOptions as EmailField)
+					break
+				case 'url':
+					schema = urlFieldSchema(fieldOptions as URLField)
+					break
+				case 'date':
+					schema = dateFieldSchema(fieldOptions as DateField)
+					break
+				case 'autodate':
+					schema = autodateFieldSchema(fieldOptions as AutodateField)
+					break
+				case 'select':
+					schema = selectFieldSchema(fieldOptions as SelectField)
+					break
+				case 'file':
+					schema = fileFieldSchema(fieldOptions as FileField)
+					break
+				case 'relation':
+					const isOptional = !fieldOptions.required
+					const isToMany = fieldOptions.isMultiple()
+
+					const relatedCollectionName = collectionIdToNameMap.get(
+						fieldOptions.collectionId
+					)!
+					const hasUniqueConstraint = fieldsWithUniqueIndex.has(fieldOptions.name)
+
+					// Forward relation
+					collectionToRelationMap[collection.name]!.push(
+						`${fieldOptions.name}${
+							isOptional ? '?' : ''
+						}: ${toPascalCase(relatedCollectionName)}${isToMany ? '[]' : ''}`
+					)
+
+					// back relation
+					let backRelation = `${collection.name}_via_${fieldOptions.name}?: ${toPascalCase(collection.name)}`
+					if (!hasUniqueConstraint) {
+						backRelation = `// ${backRelation}[]`
+					}
+					collectionToRelationMap[relatedCollectionName] ??= []
+					collectionToRelationMap[relatedCollectionName].push(backRelation)
+
+					schema = relationFieldSchema({
+						...(fieldOptions as RelationField),
+						collectionName: collectionIdToNameMap.get(
+							(fieldOptions as RelationField).collectionId
+						)!,
+					})
+					break
+				case 'json':
+					schema = jsonFieldSchema(fieldOptions as JSONField)
+					break
 			}
 
-			let field: string
-			if (type === 'select') {
-				const selectOptions = fieldOptions.values.map((v: string) => `'${v}'`).join(' | ')
-				field = `${name}: ${multipleValues ? `(${selectOptions})[]` : selectOptions}`
-			} else {
-				const fieldType = TYPE_MAP[type] ?? 'string'
-				field = `${name}: ${fieldType}${multipleValues ? '[]' : ''}`
-			}
+			const [typeDef, docs] = schema
 
-			fields.add(field)
-			collectionInterfaces += field + '\n'
+			collectionInterfaces += `${docs === '' ? '' : docs + '\n'}${typeDef}\n`
+
+			fields.add(typeDef)
 		}
 
-		// add unique identifier if there are collections with the same set of fields
 		if (fieldSets.some((set) => haveSameValues(set, fields))) {
-			// add unique identifier at the top if there are collections with the same set of fields
 			if (!collectionInterfaces.includes(UNIQUE_IDENTIFIER_KEY)) {
 				collectionInterfaces = UNIQUE_IDENTIFIER_KEY + '\n\n' + collectionInterfaces
 			}
@@ -79,48 +145,6 @@ export const generateTsSchema = () => {
 		fieldSets.push(fields)
 	}
 
-	// relations
-	const collectionToRelationMap: Record<string, string[]> = {}
-	for (const collection of allCollections) {
-		if (!config.tsSchema.includeSystemCollections && collection.system) {
-			continue
-		}
-
-		const fieldsWithUniqueIndex = new Set(
-			collection.indexes
-				.filter((index) => index.includes('UNIQUE') && !index.includes(','))
-				.map((index) => /^CREATE UNIQUE.+\(`?([^`\s]+).*\).*/.exec(index)![1])
-		)
-
-		for (const fieldSchema of collection.fields as Array<core.Field>) {
-			// has to be outside if block for collections without relations
-			collectionToRelationMap[collection.name] ??= []
-
-			if (fieldSchema.type() === 'relation') {
-				const isOptional = !fieldSchema.required
-				const isToMany = fieldSchema.isMultiple()
-
-				const relatedCollectionName = collectionIdToNameMap.get(fieldSchema.collectionId)!
-				const hasUniqueConstraint = fieldsWithUniqueIndex.has(fieldSchema.name)
-
-				// Forward relation
-				collectionToRelationMap[collection.name]!.push(
-					`${fieldSchema.name}${
-						isOptional ? '?' : ''
-					}: ${toPascalCase(relatedCollectionName)}${isToMany ? '[]' : ''}`
-				)
-
-				// back relation
-				let backRelation = `${collection.name}_via_${fieldSchema.name}?: ${toPascalCase(collection.name)}`
-				if (!hasUniqueConstraint) {
-					backRelation = `// ${backRelation}[]`
-				}
-				collectionToRelationMap[relatedCollectionName] ??= []
-				collectionToRelationMap[relatedCollectionName].push(backRelation)
-			}
-		}
-	}
-
 	// schema
 	let schemaText = `/**
  * Commented-out back-relations are what will be inferred by pocketbase-ts from the forward relations.
@@ -130,8 +154,8 @@ export const generateTsSchema = () => {
  *
  * See [here](https://github.com/satohshi/pocketbase-ts#back-relations) for more information.
  */
+export type Schema = {\n
 `
-	schemaText += 'export type Schema = {\n'
 	for (const [collection, relations] of Object.entries(collectionToRelationMap)) {
 		schemaText += `${collection}: {\n`
 		schemaText += `type: ${toPascalCase(collection)}\n`
