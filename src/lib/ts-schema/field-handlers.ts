@@ -185,7 +185,9 @@ export function selectFieldSchema(
 	const multiple = isMultiple()
 	const options = values.map((v: string) => `'${v}'`).join(' | ')
 
-	const typeStr = `${name}: ${multiple ? `(${options})[]` : options}`
+	const typeStr = `${name}: ${
+		multiple ? (required ? `[${options}, ...(${options})[]]` : `(${options})[]`) : options
+	}`
 	if (!includeDocs) return [typeStr, '']
 
 	const rows: [string, string][] = [
@@ -217,7 +219,7 @@ export function fileFieldSchema(
 ): [string, string] {
 	const multiple = isMultiple()
 
-	const typeStr = `${name}: string${multiple ? '[]' : ''}`
+	const typeStr = `${name}: ${multiple ? (required ? `[string, ...string[]]` : `string[]`) : 'string'}`
 	if (!includeDocs) return [typeStr, '']
 
 	const rows: [string, string][] = [
@@ -252,7 +254,7 @@ export function relationFieldSchema(
 ): [string, string] {
 	const multiple = isMultiple()
 
-	const typeStr = `${name}: string${multiple ? '[]' : ''}`
+	const typeStr = `${name}: ${multiple ? (required ? `[string, ...string[]]` : `string[]`) : 'string'}`
 	if (!includeDocs) return [typeStr, '']
 
 	const rows: [string, string][] = [

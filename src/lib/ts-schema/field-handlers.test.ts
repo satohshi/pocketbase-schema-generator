@@ -791,7 +791,7 @@ describe('selectFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema for multiple select with complete docs', () => {
+	it('should return tuple if multiple and required', () => {
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -805,6 +805,54 @@ describe('selectFieldSchema', () => {
 			['type', 'select (multiple)'],
 			['hidden', 'true'],
 			['required', 'true'],
+			['maxSelect', '2'],
+		])
+
+		const [schema, docs] = selectFieldSchema(field, true)
+
+		expect(schema).toBe(
+			"tags: ['featured' | 'trending' | 'popular', ...('featured' | 'trending' | 'popular')[]]"
+		)
+		expect(docs).toBe(expectedDocs)
+	})
+
+	it('should return array if multiple and NOT required', () => {
+		const field = {
+			name: 'tags',
+			hidden: true,
+			values: ['featured', 'trending', 'popular'],
+			maxSelect: 2,
+			required: false,
+			isMultiple: () => true,
+		}
+
+		const expectedDocs = generateMDTable([
+			['type', 'select (multiple)'],
+			['hidden', 'true'],
+			['required', 'false'],
+			['maxSelect', '2'],
+		])
+
+		const [schema, docs] = selectFieldSchema(field, true)
+
+		expect(schema).toBe("tags: ('featured' | 'trending' | 'popular')[]")
+		expect(docs).toBe(expectedDocs)
+	})
+
+	it('should return schema for multiple select with complete docs', () => {
+		const field = {
+			name: 'tags',
+			hidden: true,
+			values: ['featured', 'trending', 'popular'],
+			maxSelect: 2,
+			required: false,
+			isMultiple: () => true,
+		}
+
+		const expectedDocs = generateMDTable([
+			['type', 'select (multiple)'],
+			['hidden', 'true'],
+			['required', 'false'],
 			['maxSelect', '2'],
 		])
 
@@ -842,14 +890,14 @@ describe('selectFieldSchema', () => {
 			hidden: false,
 			values: ['news', 'blog'],
 			maxSelect: 0,
-			required: true,
+			required: false,
 			isMultiple: () => true,
 		}
 
 		const expectedDocs = generateMDTable([
 			['type', 'select (multiple)'],
 			['hidden', 'false'],
-			['required', 'true'],
+			['required', 'false'],
 		])
 
 		const [schema, docs] = selectFieldSchema(field, true)
@@ -917,19 +965,77 @@ describe('fileFieldSchema', () => {
 			mimeTypes: ['image/jpeg', 'image/png'],
 			thumbs: ['100x100'],
 			protected: false,
-			required: true,
+			required: false,
 			isMultiple: () => true,
 		}
 
 		const expectedDocs = generateMDTable([
 			['type', 'file (multiple)'],
 			['hidden', 'false'],
-			['required', 'true'],
+			['required', 'false'],
 			['protected', 'false'],
 			['maxSize', '10485760'],
 			['maxSelect', '5'],
 			['mimeTypes', 'image/jpeg`, `image/png'],
 			['thumbs', '100x100'],
+		])
+
+		const [schema, docs] = fileFieldSchema(field, true)
+
+		expect(schema).toBe('gallery: string[]')
+		expect(docs).toBe(expectedDocs)
+	})
+
+	it('should return tuple if multiple and required', () => {
+		const field = {
+			name: 'gallery',
+			hidden: true,
+			maxSize: 10485760,
+			maxSelect: 5,
+			mimeTypes: ['image/jpeg'],
+			thumbs: [],
+			protected: true,
+			required: true,
+			isMultiple: () => true,
+		}
+
+		const expectedDocs = generateMDTable([
+			['type', 'file (multiple)'],
+			['hidden', 'true'],
+			['required', 'true'],
+			['protected', 'true'],
+			['maxSize', '10485760'],
+			['maxSelect', '5'],
+			['mimeTypes', 'image/jpeg'],
+		])
+
+		const [schema, docs] = fileFieldSchema(field, true)
+
+		expect(schema).toBe('gallery: [string, ...string[]]')
+		expect(docs).toBe(expectedDocs)
+	})
+
+	it('should return array if multiple and NOT required', () => {
+		const field = {
+			name: 'gallery',
+			hidden: true,
+			maxSize: 10485760,
+			maxSelect: 5,
+			mimeTypes: ['image/jpeg'],
+			thumbs: [],
+			protected: true,
+			required: false,
+			isMultiple: () => true,
+		}
+
+		const expectedDocs = generateMDTable([
+			['type', 'file (multiple)'],
+			['hidden', 'true'],
+			['required', 'false'],
+			['protected', 'true'],
+			['maxSize', '10485760'],
+			['maxSelect', '5'],
+			['mimeTypes', 'image/jpeg'],
 		])
 
 		const [schema, docs] = fileFieldSchema(field, true)
@@ -947,14 +1053,14 @@ describe('fileFieldSchema', () => {
 			mimeTypes: ['image/jpeg'],
 			thumbs: [],
 			protected: false,
-			required: true,
+			required: false,
 			isMultiple: () => true,
 		}
 
 		const expectedDocs = generateMDTable([
 			['type', 'file (multiple)'],
 			['hidden', 'false'],
-			['required', 'true'],
+			['required', 'false'],
 			['protected', 'false'],
 			['maxSize', '5242880'],
 			['mimeTypes', 'image/jpeg'],
@@ -1052,14 +1158,14 @@ describe('relationFieldSchema', () => {
 			cascadeDelete: true,
 			minSelect: 1,
 			maxSelect: 3,
-			required: true,
+			required: false,
 			isMultiple: () => true,
 		}
 
 		const expectedDocs = generateMDTable([
 			['type', 'relation (multiple)'],
 			['hidden', 'false'],
-			['required', 'true'],
+			['required', 'false'],
 			['collectionId', 'categories'],
 			['collectionName', 'categories'],
 			['cascadeDelete', 'true'],
@@ -1073,6 +1179,65 @@ describe('relationFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
+	it('should return tuple if multiple and required', () => {
+		const field = {
+			name: 'tags',
+			hidden: true,
+			collectionId: 'tags',
+			collectionName: 'tags',
+			cascadeDelete: false,
+			minSelect: 1,
+			maxSelect: 3,
+			required: true,
+			isMultiple: () => true,
+		}
+
+		const expectedDocs = generateMDTable([
+			['type', 'relation (multiple)'],
+			['hidden', 'true'],
+			['required', 'true'],
+			['collectionId', 'tags'],
+			['collectionName', 'tags'],
+			['cascadeDelete', 'false'],
+			['minSelect', '1'],
+			['maxSelect', '3'],
+		])
+
+		const [schema, docs] = relationFieldSchema(field, true)
+
+		expect(schema).toBe('tags: [string, ...string[]]')
+		expect(docs).toBe(expectedDocs)
+	})
+
+	it('should return array if multiple and NOT required', () => {
+		const field = {
+			name: 'tags',
+			hidden: true,
+			collectionId: 'tags',
+			collectionName: 'tags',
+			cascadeDelete: false,
+			minSelect: 0,
+			maxSelect: 3,
+			required: false,
+			isMultiple: () => true,
+		}
+
+		const expectedDocs = generateMDTable([
+			['type', 'relation (multiple)'],
+			['hidden', 'true'],
+			['required', 'false'],
+			['collectionId', 'tags'],
+			['collectionName', 'tags'],
+			['cascadeDelete', 'false'],
+			['maxSelect', '3'],
+		])
+
+		const [schema, docs] = relationFieldSchema(field, true)
+
+		expect(schema).toBe('tags: string[]')
+		expect(docs).toBe(expectedDocs)
+	})
+
 	it('should omit minSelect if zero', () => {
 		const field = {
 			name: 'tags',
@@ -1082,14 +1247,14 @@ describe('relationFieldSchema', () => {
 			cascadeDelete: false,
 			minSelect: 0,
 			maxSelect: 5,
-			required: true,
+			required: false,
 			isMultiple: () => true,
 		}
 
 		const expectedDocs = generateMDTable([
 			['type', 'relation (multiple)'],
 			['hidden', 'false'],
-			['required', 'true'],
+			['required', 'false'],
 			['collectionId', 'tags'],
 			['collectionName', 'tags'],
 			['cascadeDelete', 'false'],
@@ -1111,14 +1276,14 @@ describe('relationFieldSchema', () => {
 			cascadeDelete: false,
 			minSelect: 1,
 			maxSelect: 0,
-			required: true,
+			required: false,
 			isMultiple: () => true,
 		}
 
 		const expectedDocs = generateMDTable([
 			['type', 'relation (multiple)'],
 			['hidden', 'false'],
-			['required', 'true'],
+			['required', 'false'],
 			['collectionId', 'categories'],
 			['collectionName', 'categories'],
 			['cascadeDelete', 'false'],
