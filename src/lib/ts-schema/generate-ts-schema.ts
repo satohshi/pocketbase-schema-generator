@@ -35,7 +35,7 @@ export const generateTsSchema = (
 	)
 
 	const fieldSets: Set<string>[] = []
-	const collectionToRelationMap: Record<string, string[]> = {}
+	const collectionToRelationMap = new Map<string, string[]>()
 
 	// interfaces
 	let collectionInterfaces = ''
@@ -49,9 +49,12 @@ export const generateTsSchema = (
 		)
 
 		const fields = new Set<string>()
-		collectionInterfaces += `export interface ${toPascalCase(collection.name)} {\n`
+		const interfaceName = toPascalCase(collection.name)
+		collectionInterfaces += `export interface ${interfaceName} {\n`
 		for (const fieldOptions of collection.fields as Array<core.Field>) {
-			collectionToRelationMap[collection.name] ??= []
+			if (!collectionToRelationMap.has(collection.name)) {
+				collectionToRelationMap.set(collection.name, [])
+			}
 
 			const type = fieldOptions.type() as CollectionType
 
@@ -91,34 +94,29 @@ export const generateTsSchema = (
 					schema = fileFieldSchema(fieldOptions as FileField)
 					break
 				case 'relation':
-					const isOptional = !fieldOptions.required
-					const isToMany = fieldOptions.isMultiple()
+					const { name, collectionId, required, isMultiple } =
+						fieldOptions as RelationField
 
-					const relatedCollectionName = collectionIdToNameMap.get(
-						fieldOptions.collectionId
-					)!
-					const hasUniqueConstraint = fieldsWithUniqueIndex.has(fieldOptions.name)
+					const hasUniqueConstraint = fieldsWithUniqueIndex.has(name)
+					const relatedCollectionName = collectionIdToNameMap.get(collectionId)!
+					if (!collectionToRelationMap.has(relatedCollectionName)) {
+						collectionToRelationMap.set(relatedCollectionName, [])
+					}
 
-					// Forward relation
-					collectionToRelationMap[collection.name]!.push(
-						`${fieldOptions.name}${
-							isOptional ? '?' : ''
-						}: ${toPascalCase(relatedCollectionName)}${isToMany ? '[]' : ''}`
-					)
+					const forwardRelation = `${name}${
+						!required ? '?' : ''
+					}: ${toPascalCase(relatedCollectionName)}${isMultiple() ? '[]' : ''}`
+					collectionToRelationMap.get(collection.name)!.push(forwardRelation)
 
-					// back relation
-					let backRelation = `${collection.name}_via_${fieldOptions.name}?: ${toPascalCase(collection.name)}`
+					let backRelation = `${collection.name}_via_${name}?: ${interfaceName}`
 					if (!hasUniqueConstraint) {
 						backRelation = `// ${backRelation}[]`
 					}
-					collectionToRelationMap[relatedCollectionName] ??= []
-					collectionToRelationMap[relatedCollectionName].push(backRelation)
+					collectionToRelationMap.get(relatedCollectionName)!.push(backRelation)
 
 					schema = relationFieldSchema({
 						...(fieldOptions as RelationField),
-						collectionName: collectionIdToNameMap.get(
-							(fieldOptions as RelationField).collectionId
-						)!,
+						collectionName: relatedCollectionName,
 					})
 					break
 				case 'json':
@@ -154,9 +152,9 @@ export const generateTsSchema = (
  *
  * See [here](https://github.com/satohshi/pocketbase-ts#back-relations) for more information.
  */
-export type Schema = {\n
+export type Schema = {
 `
-	for (const [collection, relations] of Object.entries(collectionToRelationMap)) {
+	for (const [collection, relations] of collectionToRelationMap) {
 		schemaText += `${collection}: {\n`
 		schemaText += `type: ${toPascalCase(collection)}\n`
 
