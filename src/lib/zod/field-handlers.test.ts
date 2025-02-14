@@ -394,61 +394,53 @@ describe('fileFieldSchema', () => {
 describe('relationFieldSchema', () => {
 	it('should generate basic schema for single relation', () => {
 		expect(
-			relationFieldSchema(
-				{
-					name: 'author',
-					minSelect: undefined,
-					maxSelect: undefined,
-					required: false,
-					isMultiple: () => false,
-				},
-				'z.string().regex(/^[a-z0-9]+$/).length(15)'
-			)
+			relationFieldSchema({
+				name: 'author',
+				minSelect: undefined,
+				maxSelect: undefined,
+				required: false,
+				isMultiple: () => false,
+				targetIdSchema: 'z.string().regex(/^[a-z0-9]+$/).length(15)',
+			})
 		).toBe('author: z.string().regex(/^[a-z0-9]+$/).length(15)')
 	})
 
 	it('should generate array schema for multiple relations', () => {
 		expect(
-			relationFieldSchema(
-				{
-					name: 'categories',
-					minSelect: undefined,
-					maxSelect: undefined,
-					required: false,
-					isMultiple: () => true,
-				},
-				'z.string().regex(/^[a-z0-9]+$/).length(15)'
-			)
+			relationFieldSchema({
+				name: 'categories',
+				minSelect: undefined,
+				maxSelect: undefined,
+				required: false,
+				isMultiple: () => true,
+				targetIdSchema: 'z.string().regex(/^[a-z0-9]+$/).length(15)',
+			})
 		).toBe('categories: z.string().regex(/^[a-z0-9]+$/).length(15).array()')
 	})
 
 	it('should add nonempty() when required and multiple', () => {
 		expect(
-			relationFieldSchema(
-				{
-					name: 'tags',
-					minSelect: undefined,
-					maxSelect: undefined,
-					required: true,
-					isMultiple: () => true,
-				},
-				'z.string().regex(/^[a-z0-9]+$/).length(15)'
-			)
+			relationFieldSchema({
+				name: 'tags',
+				minSelect: undefined,
+				maxSelect: undefined,
+				required: true,
+				isMultiple: () => true,
+				targetIdSchema: 'z.string().regex(/^[a-z0-9]+$/).length(15)',
+			})
 		).toBe('tags: z.string().regex(/^[a-z0-9]+$/).length(15).array().nonempty()')
 	})
 
 	it('should add min/max constraints when provided', () => {
 		expect(
-			relationFieldSchema(
-				{
-					name: 'references',
-					minSelect: 2,
-					maxSelect: 5,
-					required: false,
-					isMultiple: () => true,
-				},
-				'z.string().regex(/^[a-z0-9]+$/).length(15)'
-			)
+			relationFieldSchema({
+				name: 'references',
+				minSelect: 2,
+				maxSelect: 5,
+				required: false,
+				isMultiple: () => true,
+				targetIdSchema: 'z.string().regex(/^[a-z0-9]+$/).length(15)',
+			})
 		).toBe('references: z.string().regex(/^[a-z0-9]+$/).length(15).array().min(2).max(5)')
 	})
 })

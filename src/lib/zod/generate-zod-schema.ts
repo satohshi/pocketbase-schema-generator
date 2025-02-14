@@ -78,10 +78,12 @@ export const generateZodSchema = (
 					schema += fileFieldSchema(fieldOptions as FileField)
 					break
 				case 'relation':
-					const baseIdSchema = collectionIdToIdSchemaMap.get(
-						(fieldOptions as RelationField).collectionId
-					)!
-					schema += relationFieldSchema(fieldOptions as RelationField, baseIdSchema)
+					schema += relationFieldSchema({
+						...(fieldOptions as RelationField),
+						targetIdSchema: collectionIdToIdSchemaMap.get(
+							(fieldOptions as RelationField).collectionId
+						)!,
+					})
 					break
 				case 'json':
 					schema += jsonFieldSchema(fieldOptions as JSONField)

@@ -1,4 +1,4 @@
-export function textFieldSchema({ name, pattern, min, max, required }: TextField) {
+export function textFieldSchema({ name, pattern, min, max, required }: TextField): string {
 	let schema = `${name}: z.string()`
 
 	if (pattern) {
@@ -19,11 +19,11 @@ export function textFieldSchema({ name, pattern, min, max, required }: TextField
 	return schema
 }
 
-export function editorFieldSchema({ name, required }: EditorField) {
+export function editorFieldSchema({ name, required }: EditorField): string {
 	return `${name}: z.string()${required ? '.min(1)' : ''}`
 }
 
-export function numberFieldSchema({ name, onlyInt, min, max, required }: NumberField) {
+export function numberFieldSchema({ name, onlyInt, min, max, required }: NumberField): string {
 	let schema = `${name}: z.number()`
 
 	if (onlyInt) schema += '.int()'
@@ -34,14 +34,14 @@ export function numberFieldSchema({ name, onlyInt, min, max, required }: NumberF
 	return schema
 }
 
-export function boolFieldSchema({ name, required }: BoolField) {
+export function boolFieldSchema({ name, required }: BoolField): string {
 	if (required) {
 		return `${name}: z.literal(true)`
 	}
 	return `${name}: z.boolean()`
 }
 
-export function emailFieldSchema({ name, exceptDomains, onlyDomains }: EmailField) {
+export function emailFieldSchema({ name, exceptDomains, onlyDomains }: EmailField): string {
 	let schema = `${name}: z.string().email()`
 
 	if (onlyDomains.length > 0) {
@@ -53,8 +53,9 @@ export function emailFieldSchema({ name, exceptDomains, onlyDomains }: EmailFiel
 	return schema
 }
 
-export function urlFieldSchema({ name, exceptDomains, onlyDomains }: URLField) {
+export function urlFieldSchema({ name, exceptDomains, onlyDomains }: URLField): string {
 	let schema = `${name}: z.string().url()`
+
 	if (onlyDomains.length > 0) {
 		schema += `.refine((v) => [${onlyDomains.map((d) => `"${d}"`).join(', ')}].some((domain) => v.includes(domain)))`
 	} else if (exceptDomains.length > 0) {
@@ -64,8 +65,9 @@ export function urlFieldSchema({ name, exceptDomains, onlyDomains }: URLField) {
 	return schema
 }
 
-export function dateFieldSchema({ name, min, max }: DateField) {
+export function dateFieldSchema({ name, min, max }: DateField): string {
 	let schema = `${name}: z.string().regex(DATETIME_REGEX)`
+
 	const minDateStr = min.string()
 	const maxDateStr = max.string()
 
@@ -92,48 +94,64 @@ ${funcLines.map((line) => `        ${line}`).join('\n')}
 	)
 }
 
-export function selectFieldSchema({ name, values, maxSelect, required, isMultiple }: SelectField) {
+export function selectFieldSchema({
+	name,
+	values,
+	maxSelect,
+	required,
+	isMultiple,
+}: SelectField): string {
 	let schema = `${name}: z.enum([${values.map((v) => `"${v}"`).join(', ')}])`
+
 	if (isMultiple()) {
 		schema += '.array()'
 		if (required) schema += '.nonempty()'
 		if (maxSelect) schema += `.max(${maxSelect})`
 	}
+
 	return schema
 }
 
-export function fileFieldSchema({ name, maxSelect, required, isMultiple }: FileField) {
+export function fileFieldSchema({ name, maxSelect, required, isMultiple }: FileField): string {
 	let schema = `${name}: z.string()`
+
 	if (isMultiple()) {
 		schema += '.array()'
 		if (required) schema += '.nonempty()'
 		if (maxSelect) schema += `.max(${maxSelect})`
 	}
+
 	return schema
 }
 
-export function relationFieldSchema(
-	{ name, minSelect, maxSelect, required, isMultiple }: RelationField,
-	targetCollectionIdSchema: string
-) {
-	let schema = `${name}: ${targetCollectionIdSchema}`
+export function relationFieldSchema({
+	name,
+	minSelect,
+	maxSelect,
+	required,
+	isMultiple,
+	targetIdSchema,
+}: RelationField & { targetIdSchema: string }) {
+	let schema = `${name}: ${targetIdSchema}`
+
 	if (isMultiple()) {
 		schema += '.array()'
 		if (required) schema += '.nonempty()'
 		if (minSelect) schema += `.min(${minSelect})`
 		if (maxSelect) schema += `.max(${maxSelect})`
 	}
+
 	return schema
 }
 
-export function jsonFieldSchema({ name }: JSONField) {
+export function jsonFieldSchema({ name }: JSONField): string {
 	return `${name}: z.unknown()`
 }
 
-export function autodateFieldSchema({ name }: AutodateField) {
+export function autodateFieldSchema({ name }: AutodateField): string {
 	return `${name}: z.string().regex(DATETIME_REGEX)`
 }
 
-export function passwordFieldSchema(fieldOptions: PasswordField) {
+export function passwordFieldSchema(fieldOptions: PasswordField): string {
 	return textFieldSchema(fieldOptions as unknown as TextField)
 }
