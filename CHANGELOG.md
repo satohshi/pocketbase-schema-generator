@@ -1,5 +1,16 @@
 # pocketbase-ts-schema-generator
 
+## 0.3.0
+
+### Minor Changes
+
+- 291bd2d: support Zod schema generation
+
+### Patch Changes
+
+- 77b16b3: add option to exclude system collections
+- 261db2b: use tuple instead of array where applicable
+
 ## 0.2.0
 
 ### Minor Changes
