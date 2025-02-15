@@ -4,8 +4,24 @@
 		<meta charset="UTF-8" />
 		<title>Schema</title>
 		<style>
+			body {
+				min-height: 100dvh;
+			}
+
+			h1,
+			h2 {
+				display: inline-block;
+			}
+
+			.container {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+			}
+
 			textarea {
 				display: block;
+				width: 100%;
 			}
 
 			@supports (field-sizing: content) {
@@ -18,31 +34,48 @@
 			@supports not (field-sizing: content) {
 				textarea {
 					height: 90vh;
-					width: 100%;
 				}
 			}
 		</style>
 	</head>
 	<body>
-		<button onclick="copySchema()">Copy</button>
-		<button onclick="downloadSchema()">Download</button>
+		<h1>Generated Schema</h1>
 		{{ if .showLogOut }}<a href="/logout">Log Out</a>{{ end }}
 
-		<textarea id="schema" readonly>{{ .schema }}</textarea>
+		<div class="container">
+			<section class="">
+				<h2>TypeScript Schema</h2>
+				<button onclick="copySchema('ts')">Copy</button>
+				<button onclick="downloadSchema('ts')">Download</button>
+				<textarea id="ts-schema" readonly>{{ .tsSchema }}</textarea>
+			</section>
+
+			<section class="">
+				<h2>Zod Schema</h2>
+				<button onclick="copySchema('zod')">Copy</button>
+				<button onclick="downloadSchema('zod')">Download</button>
+				<textarea id="zod-schema" readonly>{{ .zodSchema }}</textarea>
+			</section>
+		</div>
 
 		<script>
-			const schema = document.getElementById('schema').value
+			const tsSchema = document.getElementById('ts-schema').value
+			const zodSchema = document.getElementById('zod-schema').value
 
-			function copySchema() {
+			function copySchema(type) {
+				const schema = type === 'ts' ? tsSchema : zodSchema
 				navigator.clipboard.writeText(schema).then(() => alert('Copied to clipboard'))
 			}
 
-			function downloadSchema() {
+			function downloadSchema(type) {
+				const schema = type === 'ts' ? tsSchema : zodSchema
+				const filename = type === 'ts' ? 'ts-schema.ts' : 'zod-schema.ts'
+
 				const blob = new Blob([schema], { type: 'text/plain' })
 				const url = URL.createObjectURL(blob)
 				const a = document.createElement('a')
 				a.href = url
-				a.download = 'schema.ts'
+				a.download = filename
 				a.click()
 				URL.revokeObjectURL(url)
 			}

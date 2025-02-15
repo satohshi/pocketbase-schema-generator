@@ -109,7 +109,7 @@ describe('generateMDTable', () => {
 
 	it('should generate a table with one row', () => {
 		const rows: [string, string][] = [['key', 'value']]
-		const expectedOutput = `/**\n * |     |       |\n * | --- | ----- |\n * | key | value |\n */`
+		const expectedOutput = `/**\n * |     |         |\n * | --- | ------- |\n * | key | \`value\` |\n */`
 		expect(generateMDTable(rows)).toBe(expectedOutput)
 	})
 
@@ -118,7 +118,7 @@ describe('generateMDTable', () => {
 			['key1', 'value1'],
 			['key2', 'value2'],
 		]
-		const expectedOutput = `/**\n * |      |        |\n * | ---- | ------ |\n * | key1 | value1 |\n * | key2 | value2 |\n */`
+		const expectedOutput = `/**\n * |      |          |\n * | ---- | -------- |\n * | key1 | \`value1\` |\n * | key2 | \`value2\` |\n */`
 		expect(generateMDTable(rows)).toBe(expectedOutput)
 	})
 
@@ -127,7 +127,7 @@ describe('generateMDTable', () => {
 			['short', 'longvalue'],
 			['longkey', 'short'],
 		]
-		const expectedOutput = `/**\n * |         |           |\n * | ------- | --------- |\n * | short   | longvalue |\n * | longkey | short     |\n */`
+		const expectedOutput = `/**\n * |         |             |\n * | ------- | ----------- |\n * | short   | \`longvalue\` |\n * | longkey | \`short\`     |\n */`
 		expect(generateMDTable(rows)).toBe(expectedOutput)
 	})
 })

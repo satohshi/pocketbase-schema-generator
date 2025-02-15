@@ -5,12 +5,20 @@ export function toPascalCase(collectionName: string): string {
 		.join('')
 }
 
-export function haveSameValues(set1: Set<string>, set2: Set<string>): boolean {
-	if (set1.size !== set2.size) return false
-	return [...set1].every((value) => set2.has(value))
+export function toCamelCase(collectionName: string): string {
+	const pascalCase = toPascalCase(collectionName)
+	return pascalCase.charAt(0).toLowerCase() + pascalCase.slice(1)
 }
 
-export const format = (input: string): string => {
+export function haveSameValues(set1: Set<string>, set2: Set<string>): boolean {
+	if (set1.size !== set2.size) return false
+	for (const value of set1) {
+		if (!set2.has(value)) return false
+	}
+	return true
+}
+
+export function format(input: string): string {
 	if (!input.includes('\n')) return input
 
 	const lines = input.split('\n')
@@ -29,8 +37,10 @@ export const format = (input: string): string => {
 	return output
 }
 
-export const generateMDTable = (rows: [string, string][]): string => {
+export function generateMDTable(rows: [string, string][]): string {
 	if (rows.length === 0) return ''
+
+	rows = rows.map(([key, value]) => [key, `\`${value}\``])
 
 	const leftColWidth = Math.max(...rows.map(([key]) => key.length))
 	const rightColWidth = Math.max(...rows.map(([_, value]) => value.length))
@@ -45,4 +55,8 @@ export const generateMDTable = (rows: [string, string][]): string => {
 	]
 
 	return '/**\n' + table.join('\n') + '\n */'
+}
+
+export function writeToFile(path: string, data: string): void {
+	$os.writeFile(path, data, 0o644 as any)
 }
