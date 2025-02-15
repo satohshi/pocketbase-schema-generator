@@ -1,3 +1,4 @@
+import { toCamelCase } from '../utils'
 import {
 	autodateFieldSchema,
 	boolFieldSchema,
@@ -14,10 +15,9 @@ import {
 	urlFieldSchema,
 } from './field-handlers'
 import config from '../../config.json'
-import { toCamelCase } from '../utils'
 import type { CollectionTypeName } from '../types'
 
-export const DATETIME_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?Z$/
+const DATETIME_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?Z$/
 
 export const generateZodSchema = (
 	includeSystemCollections = config.zodSchema.includeSystemCollections
@@ -102,9 +102,4 @@ export const generateZodSchema = (
 		(shouldAddDateRegex ? `const DATETIME_REGEX = ${DATETIME_REGEX}\n\n` : '') +
 		schema
 	)
-}
-
-export const writeZodSchemaToFile = () => {
-	const data = generateZodSchema()
-	$os.writeFile(config.zodSchema.outputPath, data, 0o644 as any)
 }

@@ -18,7 +18,7 @@ export function haveSameValues(set1: Set<string>, set2: Set<string>): boolean {
 	return true
 }
 
-export const format = (input: string): string => {
+export function format(input: string): string {
 	if (!input.includes('\n')) return input
 
 	const lines = input.split('\n')
@@ -37,7 +37,7 @@ export const format = (input: string): string => {
 	return output
 }
 
-export const generateMDTable = (rows: [string, string][]): string => {
+export function generateMDTable(rows: [string, string][]): string {
 	if (rows.length === 0) return ''
 
 	rows = rows.map(([key, value]) => [key, `\`${value}\``])
@@ -55,4 +55,8 @@ export const generateMDTable = (rows: [string, string][]): string => {
 	]
 
 	return '/**\n' + table.join('\n') + '\n */'
+}
+
+export function writeToFile(path: string, data: string): void {
+	$os.writeFile(path, data, 0o644 as any)
 }

@@ -1,12 +1,15 @@
 import config from './config.json'
-import { writeTsSchemaToFile } from './lib/ts-schema/generate-ts-schema'
-import { writeZodSchemaToFile } from './lib/zod/generate-zod-schema'
+import { writeToFile } from './lib/utils'
+import { generateTsSchema } from './lib/ts-schema/generate-ts-schema'
+import { generateZodSchema } from './lib/zod/generate-zod-schema'
 
 export default function () {
 	if (config.tsSchema.generateFile) {
-		writeTsSchemaToFile()
+		const tsSchema = generateTsSchema()
+		writeToFile(config.tsSchema.outputPath, tsSchema)
 	}
 	if (config.zodSchema.generateFile) {
-		writeZodSchemaToFile()
+		const zodSchema = generateZodSchema()
+		writeToFile(config.zodSchema.outputPath, zodSchema)
 	}
 }

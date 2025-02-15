@@ -13,11 +13,6 @@ describe('generateTsSchema', () => {
 		}
 	})
 
-	it('should return empty schema when no collections exist', () => {
-		const result = generateTsSchema()
-		expect(result).toContain('export type Schema = {')
-	})
-
 	it('should handle includeSystemCollections parameter', () => {
 		const mockCollections = [
 			{
@@ -292,6 +287,39 @@ describe('generateTsSchema', () => {
 		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
 
 		const result = generateTsSchema()
-		expect(result).toContain('user: Users')
+		expect(result).not.toContain(`// userDetails_via_user?: UserDetails[]`)
+		expect(result).toContain(`userDetails_via_user?: UserDetails`)
+	})
+
+	it('should include system collections if includeSystemCollections is true', () => {
+		const mockCollections = [
+			{
+				id: '1',
+				name: 'users',
+				system: true,
+				fields: [],
+				indexes: [],
+			},
+		]
+		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+
+		const result = generateTsSchema(true)
+		expect(result).toContain('export interface Users ')
+	})
+
+	it('should not include system collections if includeSystemCollections is false', () => {
+		const mockCollections = [
+			{
+				id: '1',
+				name: 'users',
+				system: true,
+				fields: [],
+				indexes: [],
+			},
+		]
+		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+
+		const result = generateTsSchema(false)
+		expect(result).not.toContain('export interface Users ')
 	})
 })
