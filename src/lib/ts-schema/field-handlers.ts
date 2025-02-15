@@ -116,8 +116,8 @@ export function emailFieldSchema(
 		['required', `${required}`],
 	]
 
-	if (exceptDomains.length > 0) rows.push(['exceptDomains', exceptDomains.join('`, `')])
-	if (onlyDomains.length > 0) rows.push(['onlyDomains', onlyDomains.join('`, `')])
+	if (exceptDomains?.length > 0) rows.push(['exceptDomains', exceptDomains.join('`, `')])
+	if (onlyDomains?.length > 0) rows.push(['onlyDomains', onlyDomains.join('`, `')])
 
 	const docs = generateMDTable(rows)
 
@@ -137,8 +137,8 @@ export function urlFieldSchema(
 		['required', `${required}`],
 	]
 
-	if (exceptDomains.length > 0) rows.push(['exceptDomains', exceptDomains.join('`, `')])
-	if (onlyDomains.length > 0) rows.push(['onlyDomains', onlyDomains.join('`, `')])
+	if (exceptDomains?.length > 0) rows.push(['exceptDomains', exceptDomains.join('`, `')])
+	if (onlyDomains?.length > 0) rows.push(['onlyDomains', onlyDomains.join('`, `')])
 
 	const docs = generateMDTable(rows)
 
@@ -238,8 +238,8 @@ export function fileFieldSchema(
 		['maxSize', `${maxSize}`],
 	]
 	if (multiple && maxSelect > 0) rows.push(['maxSelect', `${maxSelect}`])
-	if (mimeTypes.length > 0) rows.push(['mimeTypes', mimeTypes.join('`, `')])
-	if (thumbs.length > 0) rows.push(['thumbs', thumbs.join('`, `')])
+	if (mimeTypes?.length > 0) rows.push(['mimeTypes', mimeTypes.join('`, `')])
+	if (thumbs?.length > 0) rows.push(['thumbs', thumbs.join('`, `')])
 
 	const docs = generateMDTable(rows)
 
