@@ -13,7 +13,7 @@ The generated schema will have field options in docstrings, so you will get addi
 
 ## Configuration Options and Defaults
 
-```json
+```js
 {
 	// If set to true, the schema will be exposed through an HTTP endpoint
 	"exposeEndpoint": false,
