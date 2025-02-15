@@ -12,7 +12,10 @@ export function toCamelCase(collectionName: string): string {
 
 export function haveSameValues(set1: Set<string>, set2: Set<string>): boolean {
 	if (set1.size !== set2.size) return false
-	return [...set1].every((value) => set2.has(value))
+	for (const value of set1) {
+		if (!set2.has(value)) return false
+	}
+	return true
 }
 
 export const format = (input: string): string => {

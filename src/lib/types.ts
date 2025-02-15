@@ -1,4 +1,4 @@
-export type CollectionType =
+export type CollectionTypeName =
 	| 'text'
 	| 'password'
 	| 'editor'

@@ -15,25 +15,28 @@ import {
 } from './field-handlers'
 import config from '../../config.json'
 import { toCamelCase } from '../utils'
+import type { CollectionTypeName } from '../types'
 
 export const DATETIME_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?Z$/
 
 export const generateZodSchema = (
 	includeSystemCollections = config.zodSchema.includeSystemCollections
 ) => {
-	let shouldAddDateRegex = false
-	const allCollections = $app.findAllCollections() as Array<core.Collection>
+	const collections = ($app.findAllCollections() as Array<core.Collection>).filter((c) => {
+		return includeSystemCollections || !c.system
+	})
 	const collectionIdToIdSchemaMap = new Map(
-		allCollections.map((collection) => {
+		collections.map((collection) => {
 			const idField = collection.fields.find((field) => field.name === 'id') as TextField
 			return [collection.id, textFieldSchema(idField).replace('id: ', '')]
 		})
 	)
+	const shouldAddDateRegex = collections.some(({ fields }) => {
+		return fields.some((field) => field.type() === 'date' || field.type() === 'autodate')
+	})
 
 	let schema = ''
-	for (const collection of allCollections) {
-		if (!includeSystemCollections && collection.system) continue
-
+	for (const collection of collections) {
 		schema += `export const ${toCamelCase(collection.name)}Schema = z.object({\n`
 
 		for (const fieldOptions of collection.fields as Array<core.Field>) {
@@ -41,7 +44,7 @@ export const generateZodSchema = (
 
 			schema += `    `
 
-			switch (fieldOptions.type()) {
+			switch (fieldOptions.type() as CollectionTypeName) {
 				case 'text':
 					schema += textFieldSchema(fieldOptions as TextField)
 					break
@@ -64,11 +67,9 @@ export const generateZodSchema = (
 					schema += urlFieldSchema(fieldOptions as URLField)
 					break
 				case 'date':
-					shouldAddDateRegex = true
 					schema += dateFieldSchema(fieldOptions as DateField)
 					break
 				case 'autodate':
-					shouldAddDateRegex = true
 					schema += autodateFieldSchema(fieldOptions as AutodateField)
 					break
 				case 'select':
