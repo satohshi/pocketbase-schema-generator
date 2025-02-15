@@ -1,5 +1,5 @@
 {
-	"name": "pocketbase-ts-schema-generator",
+	"name": "pocketbase-schema-generator",
 	"version": "0.3.0",
 	"description": "JS hooks for PocketBase to help you with schema generation for pocketbase-ts package during development",
 	"author": "satohshi",

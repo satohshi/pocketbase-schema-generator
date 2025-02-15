@@ -1,4 +1,4 @@
-# pocketbase-ts-schema-generator
+# pocketbase-schema-generator
 
 PocketBase hook for automatically generating schemas for Zod and [pocketbase-ts](https://github.com/satohshi/pocketbase-ts).
 
