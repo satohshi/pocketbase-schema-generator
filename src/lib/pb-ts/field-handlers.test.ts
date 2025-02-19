@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it } from 'vitest'
 import {
 	autodateFieldSchema,
 	boolFieldSchema,
@@ -17,7 +17,7 @@ import {
 import { generateMDTable } from '../utils'
 
 describe('textFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'title',
 			hidden: false,
@@ -34,7 +34,7 @@ describe('textFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', () => {
+	it('should return schema with complete docs', ({ expect }) => {
 		const field = {
 			name: 'title',
 			hidden: true,
@@ -61,7 +61,7 @@ describe('textFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit min if they're not set", () => {
+	it("should omit min if they're not set", ({ expect }) => {
 		const field = {
 			name: 'title',
 			hidden: false,
@@ -87,7 +87,7 @@ describe('textFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit max if they're not set", () => {
+	it("should omit max if they're not set", ({ expect }) => {
 		const field = {
 			name: 'title',
 			hidden: false,
@@ -113,7 +113,7 @@ describe('textFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit pattern if they're not set", () => {
+	it("should omit pattern if they're not set", ({ expect }) => {
 		const field = {
 			name: 'title',
 			hidden: false,
@@ -139,7 +139,7 @@ describe('textFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit autogeneratePattern if they're not set", () => {
+	it("should omit autogeneratePattern if they're not set", ({ expect }) => {
 		const field = {
 			name: 'title',
 			hidden: false,
@@ -167,7 +167,7 @@ describe('textFieldSchema', () => {
 })
 
 describe('passwordFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'password',
 			hidden: false,
@@ -183,7 +183,7 @@ describe('passwordFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', () => {
+	it('should return schema with complete docs', ({ expect }) => {
 		const field = {
 			name: 'password',
 			hidden: true,
@@ -208,7 +208,7 @@ describe('passwordFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit min if it's not set", () => {
+	it("should omit min if it's not set", ({ expect }) => {
 		const field = {
 			name: 'password',
 			hidden: false,
@@ -232,7 +232,7 @@ describe('passwordFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit max if it's not set", () => {
+	it("should omit max if it's not set", ({ expect }) => {
 		const field = {
 			name: 'password',
 			hidden: false,
@@ -256,7 +256,7 @@ describe('passwordFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit pattern if it's not set", () => {
+	it("should omit pattern if it's not set", ({ expect }) => {
 		const field = {
 			name: 'password',
 			hidden: false,
@@ -282,7 +282,7 @@ describe('passwordFieldSchema', () => {
 })
 
 describe('editorFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'content',
 			hidden: false,
@@ -297,7 +297,7 @@ describe('editorFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', () => {
+	it('should return schema with complete docs', ({ expect }) => {
 		const field = {
 			name: 'content',
 			hidden: true,
@@ -320,7 +320,7 @@ describe('editorFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit maxSize if it's not set", () => {
+	it("should omit maxSize if it's not set", ({ expect }) => {
 		const field = {
 			name: 'content',
 			hidden: false,
@@ -344,7 +344,7 @@ describe('editorFieldSchema', () => {
 })
 
 describe('numberFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'count',
 			hidden: false,
@@ -360,7 +360,7 @@ describe('numberFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', () => {
+	it('should return schema with complete docs', ({ expect }) => {
 		const field = {
 			name: 'count',
 			hidden: true,
@@ -385,7 +385,7 @@ describe('numberFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit min if it's null", () => {
+	it("should omit min if it's null", ({ expect }) => {
 		const field = {
 			name: 'count',
 			hidden: false,
@@ -409,7 +409,7 @@ describe('numberFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit max if it's null", () => {
+	it("should omit max if it's null", ({ expect }) => {
 		const field = {
 			name: 'count',
 			hidden: false,
@@ -435,7 +435,7 @@ describe('numberFieldSchema', () => {
 })
 
 describe('boolFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'active',
 			hidden: false,
@@ -448,7 +448,7 @@ describe('boolFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', () => {
+	it('should return schema with complete docs', ({ expect }) => {
 		const field = {
 			name: 'active',
 			hidden: true,
@@ -466,7 +466,7 @@ describe('boolFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return "true" type when required is true', () => {
+	it('should return "true" type when required is true', ({ expect }) => {
 		const field = {
 			name: 'active',
 			hidden: false,
@@ -486,7 +486,7 @@ describe('boolFieldSchema', () => {
 })
 
 describe('emailFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'email',
 			hidden: false,
@@ -501,7 +501,7 @@ describe('emailFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', () => {
+	it('should return schema with complete docs', ({ expect }) => {
 		const field = {
 			name: 'email',
 			hidden: true,
@@ -524,7 +524,7 @@ describe('emailFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit exceptDomains if empty', () => {
+	it('should omit exceptDomains if empty', ({ expect }) => {
 		const field = {
 			name: 'email',
 			hidden: false,
@@ -546,7 +546,7 @@ describe('emailFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit onlyDomains if empty', () => {
+	it('should omit onlyDomains if empty', ({ expect }) => {
 		const field = {
 			name: 'email',
 			hidden: false,
@@ -570,7 +570,7 @@ describe('emailFieldSchema', () => {
 })
 
 describe('urlFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'website',
 			hidden: false,
@@ -585,7 +585,7 @@ describe('urlFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', () => {
+	it('should return schema with complete docs', ({ expect }) => {
 		const field = {
 			name: 'website',
 			hidden: true,
@@ -608,7 +608,7 @@ describe('urlFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit exceptDomains if empty', () => {
+	it('should omit exceptDomains if empty', ({ expect }) => {
 		const field = {
 			name: 'website',
 			hidden: false,
@@ -630,7 +630,7 @@ describe('urlFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit onlyDomains if empty', () => {
+	it('should omit onlyDomains if empty', ({ expect }) => {
 		const field = {
 			name: 'website',
 			hidden: false,
@@ -654,7 +654,7 @@ describe('urlFieldSchema', () => {
 })
 
 describe('dateFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'created',
 			hidden: false,
@@ -669,7 +669,7 @@ describe('dateFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', () => {
+	it('should return schema with complete docs', ({ expect }) => {
 		const field = {
 			name: 'created',
 			hidden: true,
@@ -692,7 +692,7 @@ describe('dateFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit min if empty string', () => {
+	it('should omit min if empty string', ({ expect }) => {
 		const field = {
 			name: 'created',
 			hidden: false,
@@ -714,7 +714,7 @@ describe('dateFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit max if empty string', () => {
+	it('should omit max if empty string', ({ expect }) => {
 		const field = {
 			name: 'created',
 			hidden: false,
@@ -738,7 +738,7 @@ describe('dateFieldSchema', () => {
 })
 
 describe('autodateFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'timestamp',
 			hidden: false,
@@ -752,7 +752,7 @@ describe('autodateFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', () => {
+	it('should return schema with complete docs', ({ expect }) => {
 		const field = {
 			name: 'timestamp',
 			hidden: true,
@@ -775,7 +775,7 @@ describe('autodateFieldSchema', () => {
 })
 
 describe('selectFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'category',
 			hidden: false,
@@ -791,7 +791,7 @@ describe('selectFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return tuple if multiple and required', () => {
+	it('should return tuple if multiple and required', ({ expect }) => {
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -816,7 +816,7 @@ describe('selectFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return array if multiple and NOT required', () => {
+	it('should return array if multiple and NOT required', ({ expect }) => {
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -839,7 +839,7 @@ describe('selectFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return schema for multiple select with complete docs', () => {
+	it('should return schema for multiple select with complete docs', ({ expect }) => {
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -862,7 +862,7 @@ describe('selectFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return schema for single select with complete docs', () => {
+	it('should return schema for single select with complete docs', ({ expect }) => {
 		const field = {
 			name: 'status',
 			hidden: false,
@@ -884,7 +884,7 @@ describe('selectFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit maxSelect if not multiple or zero', () => {
+	it('should omit maxSelect if not multiple or zero', ({ expect }) => {
 		const field = {
 			name: 'category',
 			hidden: false,
@@ -908,7 +908,7 @@ describe('selectFieldSchema', () => {
 })
 
 describe('fileFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'avatar',
 			hidden: false,
@@ -927,7 +927,7 @@ describe('fileFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs for single file', () => {
+	it('should return schema with complete docs for single file', ({ expect }) => {
 		const field = {
 			name: 'avatar',
 			hidden: true,
@@ -956,7 +956,7 @@ describe('fileFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return schema with complete docs for multiple files', () => {
+	it('should return schema with complete docs for multiple files', ({ expect }) => {
 		const field = {
 			name: 'gallery',
 			hidden: false,
@@ -986,7 +986,7 @@ describe('fileFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return tuple if multiple and required', () => {
+	it('should return tuple if multiple and required', ({ expect }) => {
 		const field = {
 			name: 'gallery',
 			hidden: true,
@@ -1015,7 +1015,7 @@ describe('fileFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return array if multiple and NOT required', () => {
+	it('should return array if multiple and NOT required', ({ expect }) => {
 		const field = {
 			name: 'gallery',
 			hidden: true,
@@ -1044,7 +1044,7 @@ describe('fileFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit maxSelect if not multiple or zero', () => {
+	it('should omit maxSelect if not multiple or zero', ({ expect }) => {
 		const field = {
 			name: 'gallery',
 			hidden: false,
@@ -1072,7 +1072,7 @@ describe('fileFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit mimeTypes and thumbs if empty', () => {
+	it('should omit mimeTypes and thumbs if empty', ({ expect }) => {
 		const field = {
 			name: 'document',
 			hidden: false,
@@ -1101,7 +1101,7 @@ describe('fileFieldSchema', () => {
 })
 
 describe('relationFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'user',
 			hidden: false,
@@ -1120,7 +1120,7 @@ describe('relationFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs for single relation', () => {
+	it('should return schema with complete docs for single relation', ({ expect }) => {
 		const field = {
 			name: 'author',
 			hidden: true,
@@ -1149,7 +1149,7 @@ describe('relationFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return schema with complete docs for multiple relations', () => {
+	it('should return schema with complete docs for multiple relations', ({ expect }) => {
 		const field = {
 			name: 'categories',
 			hidden: false,
@@ -1179,7 +1179,7 @@ describe('relationFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return tuple if multiple and required', () => {
+	it('should return tuple if multiple and required', ({ expect }) => {
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -1209,7 +1209,7 @@ describe('relationFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return array if multiple and NOT required', () => {
+	it('should return array if multiple and NOT required', ({ expect }) => {
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -1238,7 +1238,7 @@ describe('relationFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit minSelect if zero', () => {
+	it('should omit minSelect if zero', ({ expect }) => {
 		const field = {
 			name: 'tags',
 			hidden: false,
@@ -1267,7 +1267,7 @@ describe('relationFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit maxSelect if not multiple or zero', () => {
+	it('should omit maxSelect if not multiple or zero', ({ expect }) => {
 		const field = {
 			name: 'category',
 			hidden: false,
@@ -1298,7 +1298,7 @@ describe('relationFieldSchema', () => {
 })
 
 describe('jsonFieldSchema', () => {
-	it('should return basic schema without docs', () => {
+	it('should return basic schema without docs', ({ expect }) => {
 		const field = {
 			name: 'data',
 			hidden: false,
@@ -1312,7 +1312,7 @@ describe('jsonFieldSchema', () => {
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', () => {
+	it('should return schema with complete docs', ({ expect }) => {
 		const field = {
 			name: 'data',
 			hidden: true,
