@@ -1,5 +1,5 @@
 import config from '../config.json'
-import { generateTsSchema } from './ts-schema/generate-ts-schema.js'
+import { generateTsSchema } from './pb-ts/generate-ts-schema.js'
 import { generateZodSchema } from './zod/generate-zod-schema'
 
 export function renderSchema(e: core.RequestEvent, showLogOut: boolean) {

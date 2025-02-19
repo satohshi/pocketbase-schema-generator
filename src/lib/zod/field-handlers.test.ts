@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it } from 'vitest'
 import {
 	boolFieldSchema,
 	dateFieldSchema,
@@ -13,7 +13,7 @@ import {
 } from './field-handlers'
 
 describe('textFieldSchema', () => {
-	it('should generate basic string schema', () => {
+	it('should generate basic string schema', ({ expect }) => {
 		expect(
 			textFieldSchema({
 				name: 'title',
@@ -25,7 +25,7 @@ describe('textFieldSchema', () => {
 		).toBe('title: z.string()')
 	})
 
-	it('should handle regex pattern', () => {
+	it('should handle regex pattern', ({ expect }) => {
 		expect(
 			textFieldSchema({
 				name: 'code',
@@ -37,7 +37,7 @@ describe('textFieldSchema', () => {
 		).toBe('code: z.string().regex(/[A-Z]+/)')
 	})
 
-	it('should add length when min equals max', () => {
+	it('should add length when min equals max', ({ expect }) => {
 		expect(
 			textFieldSchema({
 				name: 'pin',
@@ -49,7 +49,7 @@ describe('textFieldSchema', () => {
 		).toBe('pin: z.string().length(4)')
 	})
 
-	it('should add min/max constraints', () => {
+	it('should add min/max constraints', ({ expect }) => {
 		expect(
 			textFieldSchema({
 				name: 'username',
@@ -61,7 +61,7 @@ describe('textFieldSchema', () => {
 		).toBe('username: z.string().min(3).max(20)')
 	})
 
-	it('should add min(1) when required without min', () => {
+	it('should add min(1) when required without min', ({ expect }) => {
 		expect(
 			textFieldSchema({
 				name: 'required_field',
@@ -75,7 +75,7 @@ describe('textFieldSchema', () => {
 })
 
 describe('editorFieldSchema', () => {
-	it('should generate basic editor schema when not required', () => {
+	it('should generate basic editor schema when not required', ({ expect }) => {
 		expect(
 			editorFieldSchema({
 				name: 'content',
@@ -84,7 +84,7 @@ describe('editorFieldSchema', () => {
 		).toBe('content: z.string()')
 	})
 
-	it('should add min(1) when required', () => {
+	it('should add min(1) when required', ({ expect }) => {
 		expect(
 			editorFieldSchema({
 				name: 'content',
@@ -95,7 +95,7 @@ describe('editorFieldSchema', () => {
 })
 
 describe('numberFieldSchema', () => {
-	it('should generate basic number schema', () => {
+	it('should generate basic number schema', ({ expect }) => {
 		expect(
 			numberFieldSchema({
 				name: 'amount',
@@ -107,7 +107,7 @@ describe('numberFieldSchema', () => {
 		).toBe('amount: z.number()')
 	})
 
-	it('should add int() constraint when onlyInt is true', () => {
+	it('should add int() constraint when onlyInt is true', ({ expect }) => {
 		expect(
 			numberFieldSchema({
 				name: 'count',
@@ -119,7 +119,7 @@ describe('numberFieldSchema', () => {
 		).toBe('count: z.number().int()')
 	})
 
-	it('should add min/max constraints', () => {
+	it('should add min/max constraints', ({ expect }) => {
 		expect(
 			numberFieldSchema({
 				name: 'rating',
@@ -131,7 +131,7 @@ describe('numberFieldSchema', () => {
 		).toBe('rating: z.number().min(1).max(5)')
 	})
 
-	it('should add non-zero refinement when required', () => {
+	it('should add non-zero refinement when required', ({ expect }) => {
 		expect(
 			numberFieldSchema({
 				name: 'quantity',
@@ -145,7 +145,7 @@ describe('numberFieldSchema', () => {
 })
 
 describe('boolFieldSchema', () => {
-	it('should generate basic boolean schema when not required', () => {
+	it('should generate basic boolean schema when not required', ({ expect }) => {
 		expect(
 			boolFieldSchema({
 				name: 'active',
@@ -154,7 +154,7 @@ describe('boolFieldSchema', () => {
 		).toBe('active: z.boolean()')
 	})
 
-	it('should generate literal true schema when required', () => {
+	it('should generate literal true schema when required', ({ expect }) => {
 		expect(
 			boolFieldSchema({
 				name: 'terms',
@@ -165,7 +165,7 @@ describe('boolFieldSchema', () => {
 })
 
 describe('emailFieldSchema', () => {
-	it('should generate basic email schema', () => {
+	it('should generate basic email schema', ({ expect }) => {
 		expect(
 			emailFieldSchema({
 				name: 'email',
@@ -175,7 +175,7 @@ describe('emailFieldSchema', () => {
 		).toBe('email: z.string().email()')
 	})
 
-	it('should add onlyDomains refinement', () => {
+	it('should add onlyDomains refinement', ({ expect }) => {
 		expect(
 			emailFieldSchema({
 				name: 'email',
@@ -187,7 +187,7 @@ describe('emailFieldSchema', () => {
 		)
 	})
 
-	it('should add exceptDomains refinement', () => {
+	it('should add exceptDomains refinement', ({ expect }) => {
 		expect(
 			emailFieldSchema({
 				name: 'email',
@@ -199,7 +199,7 @@ describe('emailFieldSchema', () => {
 })
 
 describe('urlFieldSchema', () => {
-	it('should generate basic url schema', () => {
+	it('should generate basic url schema', ({ expect }) => {
 		expect(
 			urlFieldSchema({
 				name: 'website',
@@ -209,7 +209,7 @@ describe('urlFieldSchema', () => {
 		).toBe('website: z.string().url()')
 	})
 
-	it('should add onlyDomains refinement', () => {
+	it('should add onlyDomains refinement', ({ expect }) => {
 		expect(
 			urlFieldSchema({
 				name: 'website',
@@ -221,7 +221,7 @@ describe('urlFieldSchema', () => {
 		)
 	})
 
-	it('should add exceptDomains refinement', () => {
+	it('should add exceptDomains refinement', ({ expect }) => {
 		expect(
 			urlFieldSchema({
 				name: 'website',
@@ -235,7 +235,7 @@ describe('urlFieldSchema', () => {
 })
 
 describe('dateFieldSchema', () => {
-	it('should generate basic date schema with regex', () => {
+	it('should generate basic date schema with regex', ({ expect }) => {
 		expect(
 			dateFieldSchema({
 				name: 'created',
@@ -245,7 +245,7 @@ describe('dateFieldSchema', () => {
 		).toBe('created: z.string().regex(DATETIME_REGEX)')
 	})
 
-	it('should add min date refinement', () => {
+	it('should add min date refinement', ({ expect }) => {
 		expect(
 			dateFieldSchema({
 				name: 'start',
@@ -261,7 +261,7 @@ describe('dateFieldSchema', () => {
 		)
 	})
 
-	it('should add max date refinement', () => {
+	it('should add max date refinement', ({ expect }) => {
 		expect(
 			dateFieldSchema({
 				name: 'end',
@@ -277,7 +277,7 @@ describe('dateFieldSchema', () => {
 		)
 	})
 
-	it('should add both min and max date refinements', () => {
+	it('should add both min and max date refinements', ({ expect }) => {
 		expect(
 			dateFieldSchema({
 				name: 'period',
@@ -296,7 +296,7 @@ describe('dateFieldSchema', () => {
 })
 
 describe('selectFieldSchema', () => {
-	it('should generate basic enum schema for single select', () => {
+	it('should generate basic enum schema for single select', ({ expect }) => {
 		expect(
 			selectFieldSchema({
 				name: 'status',
@@ -308,7 +308,7 @@ describe('selectFieldSchema', () => {
 		).toBe('status: z.enum(["active", "inactive"])')
 	})
 
-	it('should generate array schema for multiple select', () => {
+	it('should generate array schema for multiple select', ({ expect }) => {
 		expect(
 			selectFieldSchema({
 				name: 'tags',
@@ -320,7 +320,7 @@ describe('selectFieldSchema', () => {
 		).toBe('tags: z.enum(["news", "tech", "sports"]).array()')
 	})
 
-	it('should add nonempty() when required and multiple', () => {
+	it('should add nonempty() when required and multiple', ({ expect }) => {
 		expect(
 			selectFieldSchema({
 				name: 'categories',
@@ -332,7 +332,7 @@ describe('selectFieldSchema', () => {
 		).toBe('categories: z.enum(["A", "B", "C"]).array().nonempty()')
 	})
 
-	it('should add max constraint when maxSelect provided', () => {
+	it('should add max constraint when maxSelect provided', ({ expect }) => {
 		expect(
 			selectFieldSchema({
 				name: 'options',
@@ -346,7 +346,7 @@ describe('selectFieldSchema', () => {
 })
 
 describe('fileFieldSchema', () => {
-	it('should generate basic string schema for single file', () => {
+	it('should generate basic string schema for single file', ({ expect }) => {
 		expect(
 			fileFieldSchema({
 				name: 'avatar',
@@ -357,7 +357,7 @@ describe('fileFieldSchema', () => {
 		).toBe('avatar: z.string()')
 	})
 
-	it('should generate array schema for multiple files', () => {
+	it('should generate array schema for multiple files', ({ expect }) => {
 		expect(
 			fileFieldSchema({
 				name: 'attachments',
@@ -368,7 +368,7 @@ describe('fileFieldSchema', () => {
 		).toBe('attachments: z.string().array()')
 	})
 
-	it('should add nonempty() when required and multiple', () => {
+	it('should add nonempty() when required and multiple', ({ expect }) => {
 		expect(
 			fileFieldSchema({
 				name: 'documents',
@@ -379,7 +379,7 @@ describe('fileFieldSchema', () => {
 		).toBe('documents: z.string().array().nonempty()')
 	})
 
-	it('should add max constraint when maxSelect provided', () => {
+	it('should add max constraint when maxSelect provided', ({ expect }) => {
 		expect(
 			fileFieldSchema({
 				name: 'photos',
@@ -392,7 +392,7 @@ describe('fileFieldSchema', () => {
 })
 
 describe('relationFieldSchema', () => {
-	it('should generate basic schema for single relation', () => {
+	it('should generate basic schema for single relation', ({ expect }) => {
 		expect(
 			relationFieldSchema({
 				name: 'author',
@@ -405,7 +405,7 @@ describe('relationFieldSchema', () => {
 		).toBe('author: z.string().regex(/^[a-z0-9]+$/).length(15)')
 	})
 
-	it('should generate array schema for multiple relations', () => {
+	it('should generate array schema for multiple relations', ({ expect }) => {
 		expect(
 			relationFieldSchema({
 				name: 'categories',
@@ -418,7 +418,7 @@ describe('relationFieldSchema', () => {
 		).toBe('categories: z.string().regex(/^[a-z0-9]+$/).length(15).array()')
 	})
 
-	it('should add nonempty() when required and multiple', () => {
+	it('should add nonempty() when required and multiple', ({ expect }) => {
 		expect(
 			relationFieldSchema({
 				name: 'tags',
@@ -431,7 +431,7 @@ describe('relationFieldSchema', () => {
 		).toBe('tags: z.string().regex(/^[a-z0-9]+$/).length(15).array().nonempty()')
 	})
 
-	it('should add min/max constraints when provided', () => {
+	it('should add min/max constraints when provided', ({ expect }) => {
 		expect(
 			relationFieldSchema({
 				name: 'references',

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, vi, beforeEach } from 'vitest'
 import { generateTsSchema } from './generate-ts-schema'
 
 describe('generateTsSchema', () => {
@@ -7,13 +7,9 @@ describe('generateTsSchema', () => {
 		global.$app = {
 			findAllCollections: vi.fn().mockReturnValue([]),
 		}
-		// Mock global $os object
-		global.$os = {
-			writeFile: vi.fn(),
-		}
 	})
 
-	it('should handle includeSystemCollections parameter', () => {
+	it('should handle includeSystemCollections parameter', ({ expect }) => {
 		const mockCollections = [
 			{
 				id: '1',
@@ -32,7 +28,7 @@ describe('generateTsSchema', () => {
 		expect(resultWithoutSystem).not.toContain('export interface Users ')
 	})
 
-	it('should include unique identifier if necessary', () => {
+	it('should include unique identifier if necessary', ({ expect }) => {
 		const mockCollections = [
 			{
 				id: '1',
@@ -69,7 +65,7 @@ describe('generateTsSchema', () => {
 		expect(result).toContain('readonly [uniqueIdentifier]: unique symbol')
 	})
 
-	it('should not include unique identifier unless necessary', () => {
+	it('should not include unique identifier unless necessary', ({ expect }) => {
 		const mockCollections = [
 			{
 				id: '1',
@@ -106,7 +102,7 @@ describe('generateTsSchema', () => {
 		expect(result).not.toContain('readonly [uniqueIdentifier]: unique symbol')
 	})
 
-	it('should handle optional forward relations properly', () => {
+	it('should handle optional forward relations properly', ({ expect }) => {
 		const mockCollections = [
 			{
 				id: '1',
@@ -152,7 +148,7 @@ describe('generateTsSchema', () => {
 		expect(result).toContain('relatedBar?: Bar')
 	})
 
-	it('should handle required forward relations properly', () => {
+	it('should handle required forward relations properly', ({ expect }) => {
 		const mockCollections = [
 			{
 				id: '1',
@@ -198,7 +194,7 @@ describe('generateTsSchema', () => {
 		expect(result).toContain('relatedBar: Bar')
 	})
 
-	it('should handle optional(no unique constraint) back relations properly', () => {
+	it('should handle optional(no unique constraint) back relations properly', ({ expect }) => {
 		const mockCollections = [
 			{
 				id: '1',
@@ -244,7 +240,7 @@ describe('generateTsSchema', () => {
 		expect(result).toContain('// foo_via_relatedBar?: Foo[]')
 	})
 
-	it('should handle required(unique constraint) back relations properly', () => {
+	it('should handle required(unique constraint) back relations properly', ({ expect }) => {
 		const mockCollections = [
 			{
 				id: 'userCollectionId',
@@ -291,7 +287,7 @@ describe('generateTsSchema', () => {
 		expect(result).toContain(`userDetails_via_user?: UserDetails`)
 	})
 
-	it('should include system collections if includeSystemCollections is true', () => {
+	it('should include system collections if includeSystemCollections is true', ({ expect }) => {
 		const mockCollections = [
 			{
 				id: '1',
@@ -307,7 +303,9 @@ describe('generateTsSchema', () => {
 		expect(result).toContain('export interface Users ')
 	})
 
-	it('should not include system collections if includeSystemCollections is false', () => {
+	it('should not include system collections if includeSystemCollections is false', ({
+		expect,
+	}) => {
 		const mockCollections = [
 			{
 				id: '1',

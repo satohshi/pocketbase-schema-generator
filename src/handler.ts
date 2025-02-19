@@ -1,6 +1,6 @@
 import config from './config.json'
 import { writeToFile } from './lib/utils'
-import { generateTsSchema } from './lib/ts-schema/generate-ts-schema'
+import { generateTsSchema } from './lib/pb-ts/generate-ts-schema'
 import { generateZodSchema } from './lib/zod/generate-zod-schema'
 
 export default function () {
