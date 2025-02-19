@@ -1,5 +1,11 @@
 # pocketbase-ts-schema-generator
 
+## 0.3.1
+
+### Patch Changes
+
+- e148bfc: fix indentation
+
 ## 0.3.0
 
 ### Minor Changes
