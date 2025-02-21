@@ -2,6 +2,8 @@
 
 PocketBase hook for automatically generating schemas for Zod and [pocketbase-ts](https://github.com/satohshi/pocketbase-ts).
 
+![](demo.gif)
+
 ## Usage
 
 1. Download `pb_hooks.zip` from [releases](https://github.com/satohshi/pocketbase-ts-schema-generator/releases) and extract it to the same directory as your PocketBase executable.

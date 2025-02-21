@@ -19,6 +19,8 @@ onCollectionDeleteRequest((e) => {
 })
 
 if (require(`${__hooks}/config.json`).exposeEndpoint) {
+	routerUse($apis.gzip())
+
 	if (require(`${__hooks}/config.json`).secureEndpoint) {
 		// auth required
 		routerAdd('GET', `${require(`${__hooks}/config.json`).endpointPath}`, (e) => {
