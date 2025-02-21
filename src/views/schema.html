@@ -40,7 +40,7 @@
 	</head>
 	<body>
 		<h1>Generated Schema</h1>
-		{{ if .showLogOut }}<a href="/logout">Log Out</a>{{ end }}
+		{{ if .showLogOut }}<button onclick="logout">Log Out</button>{{ end }}
 
 		<div class="container">
 			<section class="">
@@ -78,6 +78,12 @@
 				a.download = filename
 				a.click()
 				URL.revokeObjectURL(url)
+			}
+
+			function logout() {
+				fetch('/logout', { method: 'GET' })
+					.then(() => window.location.reload())
+					.catch(console.error)
 			}
 		</script>
 	</body>
