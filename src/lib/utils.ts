@@ -57,6 +57,10 @@ export function generateMDTable(rows: [string, string][]): string {
 	return '/**\n' + table.join('\n') + '\n */'
 }
 
+export function extractFilename(path: string): string {
+	return path.replace(/^.*[\\\/]/, '')
+}
+
 export function writeToFile(path: string, data: string): void {
 	$os.writeFile(path, data, 0o644 as any)
 }

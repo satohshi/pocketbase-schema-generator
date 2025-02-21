@@ -69,7 +69,7 @@
 
 			function downloadSchema(type) {
 				const schema = type === 'ts' ? tsSchema : zodSchema
-				const filename = type === 'ts' ? 'ts-schema.ts' : 'zod-schema.ts'
+				const filename = type === 'ts' ? '{{ .tsFilename }}' : '{{ .zodFilename }}'
 
 				const blob = new Blob([schema], { type: 'text/plain' })
 				const url = URL.createObjectURL(blob)
