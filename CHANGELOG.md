@@ -1,5 +1,12 @@
 # pocketbase-ts-schema-generator
 
+## 0.3.2
+
+### Patch Changes
+
+- f7ce5ff: use filenames from config.json for downloads
+- d8bc9d2: add gzip middleware
+
 ## 0.3.1
 
 ### Patch Changes
