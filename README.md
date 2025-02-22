@@ -2,7 +2,7 @@
 
 PocketBase hook for automatically generating schemas for Zod and [pocketbase-ts](https://github.com/satohshi/pocketbase-ts).
 
-![](demo.gif)
+![demo](https://github.com/user-attachments/assets/c87323cb-d53c-4d72-9de2-f3d8a07fa228)
 
 ## Usage
 
