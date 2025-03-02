@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+
+## 0.4.0
+
 - polished ui
 
 ## 0.3.2
