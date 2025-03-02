@@ -1,0 +1,52 @@
+name: Create release
+
+on:
+    push:
+        tags:
+            - 'v*.*.*'
+
+jobs:
+    create-release:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Setup node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Get release notes
+              id: get_release_notes
+              run: |
+                  RELEASE_NOTES=$(node ./scripts/get-release-note.mjs)
+                  echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+                  echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
+                  echo "EOF" >> $GITHUB_OUTPUT
+
+            - name: Build
+              run: pnpm build
+
+            - name: Zip files
+              uses: thedoctor0/zip-release@0.7.5
+              with:
+                  type: zip
+                  path: pb_hooks
+                  filename: pb_hooks.zip
+
+            - name: Create Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: pb_hooks.zip
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  body: ${{ steps.get_release_notes.outputs.RELEASE_NOTES }}

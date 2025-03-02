@@ -40,11 +40,12 @@ export const generateZodSchema = (
 		schema += `export const ${toCamelCase(collection.name)}Schema = z.object({\n`
 
 		for (const fieldOptions of collection.fields as Array<core.Field>) {
+			const fieldType = fieldOptions.type() as CollectionTypeName
 			const optional = !fieldOptions.required || fieldOptions.autogeneratePattern
 
 			schema += `    `
 
-			switch (fieldOptions.type() as CollectionTypeName) {
+			switch (fieldType) {
 				case 'text':
 					schema += textFieldSchema(fieldOptions as TextField)
 					break
@@ -89,6 +90,8 @@ export const generateZodSchema = (
 				case 'json':
 					schema += jsonFieldSchema(fieldOptions as JSONField)
 					break
+				default:
+					fieldType satisfies never
 			}
 
 			schema += `${optional ? '.optional()' : ''},\n`

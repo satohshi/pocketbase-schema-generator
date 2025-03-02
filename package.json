@@ -1,22 +1,25 @@
 {
 	"name": "pocketbase-schema-generator",
-	"version": "0.3.2",
-	"description": "JS hooks for PocketBase to help you with schema generation for pocketbase-ts package during development",
-	"author": "satohshi",
 	"license": "MIT",
 	"private": true,
+	"workspaces": [
+		"packages/*"
+	],
 	"scripts": {
-		"dev": "tsc -w --outDir ./pb/pb_hooks/",
-		"build": "tsc --outDir ./pb_hooks/ && node -e \"require('fs').cpSync('./src/views/', './pb_hooks/views/', {recursive: true})\"",
-		"lint": "tsc --noEmit && prettier --check .",
+		"dev": "pnpm run -r --parallel --aggregate-output dev:parallel",
+		"build": "pnpm run -r --parallel build",
+		"lint": "prettier --check .",
 		"format": "prettier --write .",
-		"test": "vitest"
+		"test": "pnpm run -r --parallel test",
+		"dev:ui": "cd packages/ui && pnpm run dev",
+		"dev:hook": "cd packages/hook && pnpm run dev",
+		"bump": "node ./scripts/bump-version.mjs"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.27.12",
+		"@inquirer/prompts": "^7.3.2",
 		"@types/node": "^22.13.1",
-		"prettier": "^3.5.0",
-		"typescript": "^5.7.3",
-		"vitest": "^3.0.5"
+		"prettier": "^3.5.1",
+		"prettier-plugin-svelte": "^3.3.3",
+		"prettier-plugin-tailwindcss": "^0.6.11"
 	}
 }

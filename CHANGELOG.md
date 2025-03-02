@@ -1,5 +1,9 @@
 # pocketbase-ts-schema-generator
 
+## Unreleased
+
+- polished ui
+
 ## 0.3.2
 
 ### Patch Changes

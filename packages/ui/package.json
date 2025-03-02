@@ -1,0 +1,35 @@
+{
+	"name": "ui",
+	"private": true,
+	"version": "0.0.1",
+	"author": "satohshi",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"dev:parallel": "vite build --outDir ../../pb/pb_hooks/views --watch",
+		"build": "vite build && node -e \"require('fs').cpSync('./build/index.html', '../../pb_hooks/views/index.html')\"",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^4.0.0",
+		"@sveltejs/adapter-static": "^3.0.8",
+		"@sveltejs/kit": "^2.16.0",
+		"@sveltejs/vite-plugin-svelte": "^5.0.0",
+		"@tailwindcss/vite": "^4.0.0",
+		"svelte": "^5.0.0",
+		"svelte-check": "^4.0.0",
+		"tailwindcss": "^4.0.0",
+		"typescript": "^5.0.0",
+		"vite": "^6.0.0"
+	},
+	"dependencies": {
+		"@shikijs/core": "^2.4.1",
+		"@shikijs/engine-javascript": "^2.4.1",
+		"@shikijs/langs": "^2.4.1",
+		"@shikijs/themes": "^2.4.1",
+		"@shikijs/types": "^2.4.1"
+	}
+}

@@ -4,5 +4,21 @@
 	"singleQuote": true,
 	"trailingComma": "es5",
 	"printWidth": 100,
-	"semi": false
+	"semi": false,
+	"plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
+	"overrides": [
+		{
+			"files": "*.svelte",
+			"options": {
+				"parser": "svelte"
+			}
+		},
+		{
+			"files": ["README.md"],
+			"options": {
+				"useTabs": false,
+				"tabWidth": 4
+			}
+		}
+	]
 }

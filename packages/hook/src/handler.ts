@@ -8,6 +8,7 @@ export default function () {
 		const tsSchema = generateTsSchema()
 		writeToFile(config.tsSchema.outputPath, tsSchema)
 	}
+
 	if (config.zodSchema.generateFile) {
 		const zodSchema = generateZodSchema()
 		writeToFile(config.zodSchema.outputPath, zodSchema)
