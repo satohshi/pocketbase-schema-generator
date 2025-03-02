@@ -53,8 +53,10 @@ readonly [uniqueIdentifier]: unique symbol
 		collectionInterfaces += `export interface ${toPascalCase(collection.name)} {\n`
 
 		for (const fieldOptions of collection.fields as Array<core.Field>) {
-			let schema: [string, string]
-			switch (fieldOptions.type() as CollectionTypeName) {
+			const fieldType = fieldOptions.type() as CollectionTypeName
+
+			let schema!: [string, string]
+			switch (fieldType) {
 				case 'text':
 					schema = textFieldSchema(fieldOptions as TextField)
 					break
@@ -97,6 +99,8 @@ readonly [uniqueIdentifier]: unique symbol
 				case 'json':
 					schema = jsonFieldSchema(fieldOptions as JSONField)
 					break
+				default:
+					fieldType satisfies never
 			}
 
 			const [typeDef, docs] = schema

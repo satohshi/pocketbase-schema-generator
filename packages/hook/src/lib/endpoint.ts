@@ -10,7 +10,7 @@ export function renderSchema(e: core.RequestEvent, showLogOut: boolean) {
 	const zodSchema = generateZodSchema()
 	const zodFilename = extractFilename(config.zodSchema.outputPath)
 
-	const html = $template.loadFiles(`${__hooks}/views/schema.html`).render({
+	const html = $template.loadFiles(`${__hooks}/views/index.html`).render({
 		tsSchema,
 		tsFilename,
 		zodSchema,

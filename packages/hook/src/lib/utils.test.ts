@@ -1,57 +1,57 @@
-import { describe, expect, it } from 'vitest'
+import { describe, it } from 'vitest'
 import { toPascalCase, haveSameValues, format, generateMDTable } from './utils'
 
 describe('toPascalCase', () => {
-	it('should convert snake_case to PascalCase', () => {
+	it('should convert snake_case to PascalCase', ({ expect }) => {
 		expect(toPascalCase('example_name')).toBe('ExampleName')
 		expect(toPascalCase('another_example_name')).toBe('AnotherExampleName')
 	})
 
-	it('should handle single word input', () => {
+	it('should handle single word input', ({ expect }) => {
 		expect(toPascalCase('example')).toBe('Example')
 	})
 
-	it('should handle empty string input', () => {
+	it('should handle empty string input', ({ expect }) => {
 		expect(toPascalCase('')).toBe('')
 	})
 
-	it('should handle input with multiple underscores', () => {
+	it('should handle input with multiple underscores', ({ expect }) => {
 		expect(toPascalCase('example__name')).toBe('ExampleName')
 		expect(toPascalCase('__example_name')).toBe('ExampleName')
 		expect(toPascalCase('example_name__')).toBe('ExampleName')
 	})
 
-	it('should handle input with no underscores', () => {
+	it('should handle input with no underscores', ({ expect }) => {
 		expect(toPascalCase('examplename')).toBe('Examplename')
 	})
 })
 
 describe('haveSameValues', () => {
-	it('should return true for sets with the same values', () => {
+	it('should return true for sets with the same values', ({ expect }) => {
 		const set1 = new Set(['a', 'b', 'c'])
 		const set2 = new Set(['c', 'b', 'a'])
 		expect(haveSameValues(set1, set2)).toBe(true)
 	})
 
-	it('should return false for sets with different values', () => {
+	it('should return false for sets with different values', ({ expect }) => {
 		const set1 = new Set(['a', 'b', 'c'])
 		const set2 = new Set(['a', 'b', 'd'])
 		expect(haveSameValues(set1, set2)).toBe(false)
 	})
 
-	it('should return false for sets with different sizes', () => {
+	it('should return false for sets with different sizes', ({ expect }) => {
 		const set1 = new Set(['a', 'b', 'c'])
 		const set2 = new Set(['a', 'b'])
 		expect(haveSameValues(set1, set2)).toBe(false)
 	})
 
-	it('should return true for two empty sets', () => {
+	it('should return true for two empty sets', ({ expect }) => {
 		const set1 = new Set<string>()
 		const set2 = new Set<string>()
 		expect(haveSameValues(set1, set2)).toBe(true)
 	})
 
-	it('should return false for one empty set and one non-empty set', () => {
+	it('should return false for one empty set and one non-empty set', ({ expect }) => {
 		const set1 = new Set<string>()
 		const set2 = new Set(['a'])
 		expect(haveSameValues(set1, set2)).toBe(false)
@@ -59,7 +59,7 @@ describe('haveSameValues', () => {
 })
 
 describe('format', () => {
-	it('should format a simple schema correctly', () => {
+	it('should format a simple schema correctly', ({ expect }) => {
 		const input = '{\nkey: value\n}'
 		const expectedOutput = `{
     key: value
@@ -68,7 +68,7 @@ describe('format', () => {
 		expect(format(input)).toBe(expectedOutput)
 	})
 
-	it('should handle nested objects correctly', () => {
+	it('should handle nested objects correctly', ({ expect }) => {
 		const input = '{\nkey: value\nnested: {\nkey: value\n}\n}'
 		const expectedOutput = `{
     key: value
@@ -80,7 +80,7 @@ describe('format', () => {
 		expect(format(input)).toBe(expectedOutput)
 	})
 
-	it('should handle multiple nested objects correctly', () => {
+	it('should handle multiple nested objects correctly', ({ expect }) => {
 		const input = '{\nkey: value\nnested1: {\nkey: value\nnested2: {\nkey: value\n}\n}\n}'
 		const expectedOutput = `{
     key: value
@@ -95,7 +95,7 @@ describe('format', () => {
 		expect(format(input)).toBe(expectedOutput)
 	})
 
-	it('should handle empty input', () => {
+	it('should handle empty input', ({ expect }) => {
 		const input = ``
 		const expectedOutput = ``
 		expect(format(input)).toBe(expectedOutput)
@@ -103,17 +103,17 @@ describe('format', () => {
 })
 
 describe('generateMDTable', () => {
-	it('should generate an empty table for empty input', () => {
+	it('should generate an empty table for empty input', ({ expect }) => {
 		expect(generateMDTable([])).toBe('')
 	})
 
-	it('should generate a table with one row', () => {
+	it('should generate a table with one row', ({ expect }) => {
 		const rows: [string, string][] = [['key', 'value']]
 		const expectedOutput = `/**\n * |     |         |\n * | --- | ------- |\n * | key | \`value\` |\n */`
 		expect(generateMDTable(rows)).toBe(expectedOutput)
 	})
 
-	it('should generate a table with multiple rows', () => {
+	it('should generate a table with multiple rows', ({ expect }) => {
 		const rows: [string, string][] = [
 			['key1', 'value1'],
 			['key2', 'value2'],
@@ -122,7 +122,7 @@ describe('generateMDTable', () => {
 		expect(generateMDTable(rows)).toBe(expectedOutput)
 	})
 
-	it('should handle rows with different lengths', () => {
+	it('should handle rows with different lengths', ({ expect }) => {
 		const rows: [string, string][] = [
 			['short', 'longvalue'],
 			['longkey', 'short'],
