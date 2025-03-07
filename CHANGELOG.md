@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- embed verson number in ui
 
 ## 0.4.0
 

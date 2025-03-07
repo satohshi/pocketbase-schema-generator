@@ -89,4 +89,14 @@
 	>
 		{@html includeComments ? html : htmlWithtoutComments}
 	</div>
+
+	<a
+		target="_blank"
+		rel="noopener noreferrer"
+		href="https://github.com/satohshi/pocketbase-schema-generator"
+		class="text-end text-xs text-gray-400 transition-colors hover:text-gray-600"
+	>
+		<span class="">pocketbase-schema-generator </span>
+		<span class="">v{__APP_VERSION__}</span>
+	</a>
 </div>
