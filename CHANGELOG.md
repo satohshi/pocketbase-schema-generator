@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+
+## 0.5.0
+
 - provide ways to better type json fields (fixes #13)
 
 ## 0.4.1
