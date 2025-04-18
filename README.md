@@ -55,7 +55,7 @@ You can override this by specifying the type in the `overrides` object in your c
 
 For example, if you have a collection called `users` with a JSON field called `profile`, you can specify the type like this:
 
-```json
+```jsonc
 // config.json
 
 {
@@ -63,10 +63,10 @@ For example, if you have a collection called `users` with a JSON field called `p
     "tsSchema": {
         "overrides": {
             "users": {
-                "profile": "{ name: string; age: number }"
-            }
-        }
-    }
+                "profile": "{ name: string; age: number }",
+            },
+        },
+    },
     // ...
 }
 ```
@@ -82,7 +82,7 @@ export interface UserProfile {
 }
 ```
 
-```json
+```jsonc
 // config.json
 
 {
@@ -91,10 +91,10 @@ export interface UserProfile {
         // ...
         "overrides": {
             "users": {
-                "profile": "import('./types.ts').UserProfile"
-            }
-        }
-    }
+                "profile": "import('./types.ts').UserProfile",
+            },
+        },
+    },
     // ...
 }
 ```
@@ -108,7 +108,7 @@ You can override them the same way as above.
 JSON fields are `z.unknown()` by default.
 You can override this just like above.
 
-```json
+```jsonc
 // config.json
 {
     // ...
@@ -116,10 +116,10 @@ You can override this just like above.
         // ...
         "overrides": {
             "users": {
-                "profile": "z.object({ name: z.string(), age: z.number() })"
-            }
-        }
-    }
+                "profile": "z.object({ name: z.string(), age: z.number() })",
+            },
+        },
+    },
 }
 ```
 
@@ -134,7 +134,7 @@ export const userProfileSchema = z.object({
 })
 ```
 
-```json
+```jsonc
 // config.json
 
 {
@@ -145,9 +145,9 @@ export const userProfileSchema = z.object({
             // specify import statements that need to be added to the top of the generated file
             "importStatements": ["import { userProfileSchema } from './zodSchema.ts'"],
             "users": {
-                "profile": "userProfileSchema"
-            }
-        }
-    }
+                "profile": "userProfileSchema",
+            },
+        },
+    },
 }
 ```
