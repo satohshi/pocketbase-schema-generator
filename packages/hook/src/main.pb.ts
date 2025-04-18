@@ -18,12 +18,12 @@ onCollectionDeleteRequest((e) => {
 	require(`${__hooks}/handler.js`).default()
 })
 
-if (require(`${__hooks}/config.json`).exposeEndpoint) {
+if ((require(`${__hooks}/config.json`) as Config).exposeEndpoint) {
 	routerUse($apis.gzip())
 
-	if (require(`${__hooks}/config.json`).secureEndpoint) {
+	if ((require(`${__hooks}/config.json`) as Config).secureEndpoint) {
 		// auth required
-		routerAdd('GET', `${require(`${__hooks}/config.json`).endpointPath}`, (e) => {
+		routerAdd('GET', `${(require(`${__hooks}/config.json`) as Config).endpointPath}`, (e) => {
 			require(`${__hooks}/lib/endpoint.js`).secureEndpointHandler(e)
 		})
 		routerAdd('GET', '/logout', (e) => {
@@ -31,7 +31,7 @@ if (require(`${__hooks}/config.json`).exposeEndpoint) {
 		})
 	} else {
 		// no auth required
-		routerAdd('GET', `${require(`${__hooks}/config.json`).endpointPath}`, (e) => {
+		routerAdd('GET', `${(require(`${__hooks}/config.json`) as Config).endpointPath}`, (e) => {
 			require(`${__hooks}/lib/endpoint.js`).renderSchema(e, false)
 		})
 	}

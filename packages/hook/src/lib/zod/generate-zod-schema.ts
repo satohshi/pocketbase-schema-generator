@@ -35,9 +35,7 @@ export const generateZodSchema = (
 		return fields.some((field) => field.type() === 'date' || field.type() === 'autodate')
 	})
 
-	const overrides = config.zodSchema.overrides as unknown as
-		| undefined
-		| ({ importStatements?: string[] } & Record<string, Record<string, string>>)
+	const overrides = config.zodSchema.overrides
 
 	let schema = ''
 	for (const collection of collections) {
