@@ -100,6 +100,15 @@ describe('format', () => {
 		const expectedOutput = ``
 		expect(format(input)).toBe(expectedOutput)
 	})
+
+	it('should handle cases where "{" is on the same line as "}"', ({ expect }) => {
+		const input = `{\nkey: { key: value }\n}`
+		const expectedOutput = `{
+    key: { key: value }
+}
+`
+		expect(format(input)).toBe(expectedOutput)
+	})
 })
 
 describe('generateMDTable', () => {

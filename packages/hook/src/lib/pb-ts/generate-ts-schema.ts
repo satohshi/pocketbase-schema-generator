@@ -97,7 +97,10 @@ readonly [uniqueIdentifier]: unique symbol
 					})
 					break
 				case 'json':
-					schema = jsonFieldSchema(fieldOptions as JSONField)
+					schema = jsonFieldSchema({
+						...(fieldOptions as JSONField),
+						override: config.tsSchema.overrides?.[collection.name]?.[fieldOptions.name],
+					})
 					break
 				default:
 					fieldType satisfies never

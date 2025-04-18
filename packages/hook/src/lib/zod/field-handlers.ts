@@ -144,8 +144,11 @@ export function relationFieldSchema({
 	return schema
 }
 
-export function jsonFieldSchema({ name }: JSONField): string {
-	return `${name}: z.unknown()`
+export function jsonFieldSchema({
+	name,
+	override,
+}: JSONField & { override: string | undefined }): string {
+	return `${name}: ${override ?? 'z.unknown()'}`
 }
 
 export function autodateFieldSchema({ name }: AutodateField): string {
