@@ -283,10 +283,10 @@ export function relationFieldSchema(
 }
 
 export function jsonFieldSchema(
-	{ name, hidden, maxSize, required }: JSONField,
+	{ name, hidden, maxSize, required, override }: JSONField & { override: string | undefined },
 	includeDocs = config.tsSchema.includeDocs
 ): [string, string] {
-	const typeDef = `${name}: any`
+	const typeDef = `${name}: ${override ?? 'any'}`
 	if (!includeDocs) return [typeDef, '']
 
 	const docs = generateMDTable([

@@ -25,7 +25,7 @@ export function format(input: string): string {
 	let indent = 0
 	let output = ''
 	for (const line of lines) {
-		if (line.endsWith('}')) {
+		if (line.endsWith('}') && !line.includes('{')) {
 			indent -= 1
 		}
 		output += '    '.repeat(indent) + line + '\n'
