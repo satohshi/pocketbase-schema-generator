@@ -35,6 +35,10 @@ export const generateZodSchema = (
 		return fields.some((field) => field.type() === 'date' || field.type() === 'autodate')
 	})
 
+	const overrides = config.zodSchema.overrides as unknown as
+		| undefined
+		| ({ importStatements?: string[] } & Record<string, Record<string, string>>)
+
 	let schema = ''
 	for (const collection of collections) {
 		schema += `export const ${toCamelCase(collection.name)}Schema = z.object({\n`
@@ -88,7 +92,10 @@ export const generateZodSchema = (
 					})
 					break
 				case 'json':
-					schema += jsonFieldSchema(fieldOptions as JSONField)
+					schema += jsonFieldSchema({
+						...(fieldOptions as JSONField),
+						override: overrides?.[collection.name]?.[fieldOptions.name],
+					})
 					break
 				default:
 					fieldType satisfies never
@@ -100,9 +107,17 @@ export const generateZodSchema = (
 		schema += '})\n\n'
 	}
 
-	return (
-		"import { z } from 'zod'\n\n" +
-		(shouldAddDateRegex ? `const DATETIME_REGEX = ${DATETIME_REGEX}\n\n` : '') +
-		schema
-	)
+	const imports = ["import { z } from 'zod'"]
+
+	if (overrides?.importStatements) {
+		imports.push(...overrides.importStatements)
+	}
+
+	let result = imports.join('\n') + '\n\n'
+
+	if (shouldAddDateRegex) {
+		result += `const DATETIME_REGEX = ${DATETIME_REGEX}\n\n`
+	}
+
+	return result + schema
 }
