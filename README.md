@@ -61,6 +61,7 @@ For example, if you have a collection called `users` with a JSON field called `p
 {
     // ...
     "tsSchema": {
+        // ...
         "overrides": {
             "users": {
                 "profile": "{ name: string; age: number }",
@@ -105,11 +106,12 @@ You can override them the same way as above.
 
 ### Zod Schemas
 
-JSON fields are `z.unknown()` by default.
+JSON fields are `z.unknown()` by default.  
 You can override this just like above.
 
 ```jsonc
 // config.json
+
 {
     // ...
     "zodSchema": {
