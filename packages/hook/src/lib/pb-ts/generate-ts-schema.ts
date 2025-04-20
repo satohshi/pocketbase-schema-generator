@@ -46,6 +46,8 @@ readonly [uniqueIdentifier]: unique symbol
 
 	const fieldSets: Set<string>[] = []
 
+	const overrides = (config as Config).tsSchema.overrides
+
 	let collectionInterfaces = ''
 	for (const collection of collections) {
 		const fields = new Set<string>()
@@ -99,7 +101,7 @@ readonly [uniqueIdentifier]: unique symbol
 				case 'json':
 					schema = jsonFieldSchema({
 						...(fieldOptions as JSONField),
-						override: config.tsSchema.overrides?.[collection.name]?.[fieldOptions.name],
+						override: overrides?.[collection.name]?.[fieldOptions.name],
 					})
 					break
 				default:

@@ -27,8 +27,3 @@ interface Config {
 		}
 	}
 }
-
-declare module '*/config.json' {
-	const config: Config
-	export default config
-}
