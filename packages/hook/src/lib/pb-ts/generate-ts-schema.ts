@@ -6,6 +6,7 @@ import {
 	editorFieldSchema,
 	emailFieldSchema,
 	fileFieldSchema,
+	geoPointSchema,
 	jsonFieldSchema,
 	numberFieldSchema,
 	passwordFieldSchema,
@@ -103,6 +104,9 @@ readonly [uniqueIdentifier]: unique symbol
 						...(fieldOptions as JSONField),
 						override: overrides?.[collection.name]?.[fieldOptions.name],
 					})
+					break
+				case 'geoPoint':
+					schema = geoPointSchema(fieldOptions as GeoPointField)
 					break
 				default:
 					fieldType satisfies never

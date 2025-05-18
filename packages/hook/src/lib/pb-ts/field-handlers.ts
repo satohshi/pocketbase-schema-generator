@@ -298,3 +298,19 @@ export function jsonFieldSchema(
 
 	return [typeDef, docs]
 }
+
+export function geoPointSchema(
+	{ name, hidden, required }: GeoPointField,
+	includeDocs = config.tsSchema.includeDocs
+): [string, string] {
+	const typeDef = `${name}: { lon: number; lat: number }`
+	if (!includeDocs) return [typeDef, '']
+
+	const docs = generateMDTable([
+		['type', 'geoPoint'],
+		['hidden', `${hidden}`],
+		['required', `${required}`],
+	])
+
+	return [typeDef, docs]
+}

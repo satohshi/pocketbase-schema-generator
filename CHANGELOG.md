@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- add geoPoint support
 
 ## 0.5.1
 

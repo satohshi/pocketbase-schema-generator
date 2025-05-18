@@ -6,6 +6,7 @@ import {
 	editorFieldSchema,
 	emailFieldSchema,
 	fileFieldSchema,
+	geoPointFieldSchema,
 	jsonFieldSchema,
 	numberFieldSchema,
 	passwordFieldSchema,
@@ -94,6 +95,9 @@ export const generateZodSchema = (
 						...(fieldOptions as JSONField),
 						override: overrides?.[collection.name]?.[fieldOptions.name],
 					})
+					break
+				case 'geoPoint':
+					schema += geoPointFieldSchema(fieldOptions as GeoPointField)
 					break
 				default:
 					fieldType satisfies never

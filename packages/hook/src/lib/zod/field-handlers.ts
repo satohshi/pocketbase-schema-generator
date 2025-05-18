@@ -158,3 +158,13 @@ export function autodateFieldSchema({ name }: AutodateField): string {
 export function passwordFieldSchema(fieldOptions: PasswordField): string {
 	return textFieldSchema(fieldOptions as unknown as TextField)
 }
+
+export function geoPointFieldSchema({ name, required }: GeoPointField): string {
+	let schema = `${name}: z.object({ lon: z.number(), lat: z.number() })`
+
+	if (required) {
+		schema += '.refine(({ lon, lat }) => !(lon === 0 && lat === 0))'
+	}
+
+	return schema
+}

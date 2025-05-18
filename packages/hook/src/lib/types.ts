@@ -12,3 +12,4 @@ export type CollectionTypeName =
 	| 'file'
 	| 'relation'
 	| 'json'
+	| 'geoPoint'
