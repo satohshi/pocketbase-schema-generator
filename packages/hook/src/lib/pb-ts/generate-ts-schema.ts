@@ -47,7 +47,7 @@ readonly [uniqueIdentifier]: unique symbol
 
 	const fieldSets: Set<string>[] = []
 
-	const overrides = (config as Config).tsSchema.overrides
+	const overrides = config.tsSchema.overrides
 
 	let collectionInterfaces = ''
 	for (const collection of collections) {

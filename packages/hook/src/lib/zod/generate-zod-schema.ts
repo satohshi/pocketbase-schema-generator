@@ -36,7 +36,7 @@ export const generateZodSchema = (
 		return fields.some((field) => field.type() === 'date' || field.type() === 'autodate')
 	})
 
-	const overrides = (config as Config).zodSchema.overrides
+	const overrides = config.zodSchema.overrides
 
 	let schema = ''
 	for (const collection of collections) {

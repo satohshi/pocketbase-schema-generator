@@ -1,4 +1,4 @@
-interface Config {
+declare const config: {
 	exposeEndpoint: boolean
 	endpointPath: string
 	secureEndpoint: boolean
@@ -27,3 +27,9 @@ interface Config {
 		}
 	}
 }
+
+declare global {
+	type Config = typeof config
+}
+
+export default config
