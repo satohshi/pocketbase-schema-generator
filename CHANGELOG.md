@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+
+## 0.6.0
+
 - add collection name/id fields
 
 ## 0.5.2
