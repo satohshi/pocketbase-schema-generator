@@ -42,6 +42,10 @@ export const generateZodSchema = (
 	for (const collection of collections) {
 		schema += `export const ${toCamelCase(collection.name)}Schema = z.object({\n`
 
+		// Add system fields that are always present in PocketBase Records API responses but not in collection fields
+		schema += `    collectionId: z.string().optional(),\n`
+		schema += `    collectionName: z.string().optional(),\n`
+
 		for (const fieldOptions of collection.fields as Array<core.Field>) {
 			const fieldType = fieldOptions.type() as CollectionTypeName
 			const optional = !fieldOptions.required || fieldOptions.autogeneratePattern

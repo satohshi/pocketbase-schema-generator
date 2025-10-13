@@ -54,6 +54,9 @@ readonly [uniqueIdentifier]: unique symbol
 		const fields = new Set<string>()
 
 		collectionInterfaces += `export interface ${toPascalCase(collection.name)} {\n`
+		// Add system fields that are always present in PocketBase Records API responses but not in collection fields
+		collectionInterfaces += `collectionId: string\n`
+		collectionInterfaces += `collectionName: string\n`
 
 		for (const fieldOptions of collection.fields as Array<core.Field>) {
 			const fieldType = fieldOptions.type() as CollectionTypeName
