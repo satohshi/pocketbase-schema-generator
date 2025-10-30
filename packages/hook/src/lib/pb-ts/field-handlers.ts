@@ -191,7 +191,7 @@ export function selectFieldSchema(
 	includeDocs = config.tsSchema.includeDocs
 ): [string, string] {
 	const multiple = isMultiple()
-	const options = values.map((v: string) => `'${v}'`).join(' | ')
+	const options = values.map((v: string) => `'${v.replace(/([\\'])/g, '\\$1')}'`).join(' | ')
 
 	const typeDef = `${name}: ${
 		multiple ? (required ? `[${options}, ...(${options})[]]` : `(${options})[]`) : options

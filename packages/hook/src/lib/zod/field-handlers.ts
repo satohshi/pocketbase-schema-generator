@@ -101,7 +101,7 @@ export function selectFieldSchema({
 	required,
 	isMultiple,
 }: SelectField): string {
-	let schema = `${name}: z.enum([${values.map((v) => `"${v}"`).join(', ')}])`
+	let schema = `${name}: z.enum([${values.map((v) => `'${v.replace(/([\\'])/g, '\\$1')}'`).join(', ')}])`
 
 	if (isMultiple()) {
 		schema += '.array()'
