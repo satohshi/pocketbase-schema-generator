@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+
+## 0.6.1
+
 - escape single quotes and backslashes in select options (fixes #17)
 
 ## 0.6.0
