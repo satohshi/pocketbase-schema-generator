@@ -45,9 +45,9 @@ export function emailFieldSchema({ name, exceptDomains, onlyDomains }: EmailFiel
 	let schema = `${name}: z.string().email()`
 
 	if (onlyDomains.length > 0) {
-		schema += `.refine((v) => [${onlyDomains.map((d) => `"${d}"`).join(', ')}].includes(v.split('@')[1]))`
+		schema += `.refine((v) => [${onlyDomains.map((d) => `'${d}'`).join(', ')}].includes(v.split('@')[1]))`
 	} else if (exceptDomains.length > 0) {
-		schema += `.refine((v) => ![${exceptDomains.map((d) => `"${d}"`).join(', ')}].includes(v.split('@')[1]))`
+		schema += `.refine((v) => ![${exceptDomains.map((d) => `'${d}'`).join(', ')}].includes(v.split('@')[1]))`
 	}
 
 	return schema
@@ -57,9 +57,9 @@ export function urlFieldSchema({ name, exceptDomains, onlyDomains }: URLField): 
 	let schema = `${name}: z.string().url()`
 
 	if (onlyDomains.length > 0) {
-		schema += `.refine((v) => [${onlyDomains.map((d) => `"${d}"`).join(', ')}].some((domain) => v.includes(domain)))`
+		schema += `.refine((v) => [${onlyDomains.map((d) => `'${d}'`).join(', ')}].some((domain) => v.includes(domain)))`
 	} else if (exceptDomains.length > 0) {
-		schema += `.refine((v) => [${exceptDomains.map((d) => `"${d}"`).join(', ')}].every((domain) => !v.includes(domain)))`
+		schema += `.refine((v) => [${exceptDomains.map((d) => `'${d}'`).join(', ')}].every((domain) => !v.includes(domain)))`
 	}
 
 	return schema
