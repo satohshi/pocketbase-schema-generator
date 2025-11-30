@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- fix: config.json not included in build (fixes #19)
 
 ## 0.6.1
 
