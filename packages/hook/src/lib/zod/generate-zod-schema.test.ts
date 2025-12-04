@@ -1,20 +1,21 @@
-import { describe, it, vi, beforeEach } from 'vitest'
+import { describe, it, vi, afterEach } from 'vitest'
 import { generateZodSchema } from './generate-zod-schema'
 
 describe('generateZodSchema', () => {
-	beforeEach(() => {
-		global.$app = {
-			findAllCollections: vi.fn().mockReturnValue([]),
-		}
+	afterEach(() => {
+		vi.unstubAllGlobals()
 	})
 
 	it('should import zod', ({ expect }) => {
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue([]),
+		})
 		const result = generateZodSchema()
 		expect(result).toContain("import { z } from 'zod'")
 	})
 
 	it('should generate schema with datetime regex when date fields exist', ({ expect }) => {
-		global.$app.findAllCollections.mockReturnValue([
+		const mockCollections = [
 			{
 				id: '123',
 				name: 'posts',
@@ -33,14 +34,17 @@ describe('generateZodSchema', () => {
 					},
 				],
 			},
-		])
+		]
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateZodSchema()
 		expect(result).toContain('DATETIME_REGEX')
 	})
 
 	it('should generate schema with datetime regex when autodate fields exist', ({ expect }) => {
-		global.$app.findAllCollections.mockReturnValue([
+		const mockCollections = [
 			{
 				id: '123',
 				name: 'posts',
@@ -59,14 +63,17 @@ describe('generateZodSchema', () => {
 					},
 				],
 			},
-		])
+		]
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateZodSchema()
 		expect(result).toContain('DATETIME_REGEX')
 	})
 
 	it('should not generate schema with datetime regex when no date fields exist', ({ expect }) => {
-		global.$app.findAllCollections.mockReturnValue([
+		const mockCollections = [
 			{
 				id: '123',
 				name: 'posts',
@@ -83,7 +90,10 @@ describe('generateZodSchema', () => {
 					},
 				],
 			},
-		])
+		]
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateZodSchema()
 		expect(result).not.toContain('DATETIME_REGEX')
@@ -92,7 +102,7 @@ describe('generateZodSchema', () => {
 	it('should only generate schema for non-system collections when the option is set to false', ({
 		expect,
 	}) => {
-		global.$app.findAllCollections.mockReturnValue([
+		const mockCollections = [
 			{
 				id: '123',
 				name: '_system',
@@ -109,7 +119,10 @@ describe('generateZodSchema', () => {
 					},
 				],
 			},
-		])
+		]
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateZodSchema()
 		expect(result).not.toContain('systemSchema')
@@ -118,13 +131,7 @@ describe('generateZodSchema', () => {
 	it('should generate schema for all collections when the option is set to true', ({
 		expect,
 	}) => {
-		global.$pb_schema_conf = {
-			zodSchema: {
-				includeSystemCollections: true,
-			},
-		}
-
-		global.$app.findAllCollections.mockReturnValue([
+		const mockCollections = [
 			{
 				id: '123',
 				name: '_system',
@@ -141,7 +148,10 @@ describe('generateZodSchema', () => {
 					},
 				],
 			},
-		])
+		]
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateZodSchema(true)
 		expect(result).toContain('systemSchema')

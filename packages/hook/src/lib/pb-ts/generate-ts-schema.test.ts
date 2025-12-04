@@ -1,12 +1,9 @@
-import { describe, it, vi, beforeEach } from 'vitest'
+import { describe, it, vi, afterEach } from 'vitest'
 import { generateTsSchema } from './generate-ts-schema'
 
 describe('generateTsSchema', () => {
-	beforeEach(() => {
-		// Mock global $app object
-		global.$app = {
-			findAllCollections: vi.fn().mockReturnValue([]),
-		}
+	afterEach(() => {
+		vi.unstubAllGlobals()
 	})
 
 	it('should handle includeSystemCollections parameter', ({ expect }) => {
@@ -19,7 +16,9 @@ describe('generateTsSchema', () => {
 				indexes: [],
 			},
 		]
-		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const resultWithSystem = generateTsSchema(true)
 		expect(resultWithSystem).toContain('export interface Users ')
@@ -59,7 +58,9 @@ describe('generateTsSchema', () => {
 				indexes: [],
 			},
 		]
-		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateTsSchema()
 		expect(result).toContain('readonly [uniqueIdentifier]: unique symbol')
@@ -96,7 +97,9 @@ describe('generateTsSchema', () => {
 				indexes: [],
 			},
 		]
-		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateTsSchema()
 		expect(result).not.toContain('readonly [uniqueIdentifier]: unique symbol')
@@ -142,7 +145,9 @@ describe('generateTsSchema', () => {
 				indexes: [],
 			},
 		]
-		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateTsSchema()
 		expect(result).toContain('relatedBar?: Bar')
@@ -188,7 +193,9 @@ describe('generateTsSchema', () => {
 				indexes: [],
 			},
 		]
-		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateTsSchema()
 		expect(result).toContain('relatedBar: Bar')
@@ -234,7 +241,9 @@ describe('generateTsSchema', () => {
 				indexes: [],
 			},
 		]
-		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateTsSchema()
 		expect(result).toContain('// foo_via_relatedBar?: Foo[]')
@@ -280,7 +289,9 @@ describe('generateTsSchema', () => {
 				indexes: ['CREATE UNIQUE INDEX `idx_1` ON `userDetails` (`user`)'],
 			},
 		]
-		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateTsSchema()
 		expect(result).not.toContain(`// userDetails_via_user?: UserDetails[]`)
@@ -297,7 +308,9 @@ describe('generateTsSchema', () => {
 				indexes: [],
 			},
 		]
-		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateTsSchema(true)
 		expect(result).toContain('export interface Users ')
@@ -315,7 +328,9 @@ describe('generateTsSchema', () => {
 				indexes: [],
 			},
 		]
-		global.$app.findAllCollections = vi.fn().mockReturnValue(mockCollections)
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
 
 		const result = generateTsSchema(false)
 		expect(result).not.toContain('export interface Users ')

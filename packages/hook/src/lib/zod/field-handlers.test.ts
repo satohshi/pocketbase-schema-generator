@@ -183,7 +183,7 @@ describe('emailFieldSchema', () => {
 				onlyDomains: ['example.com', 'test.com'],
 			})
 		).toBe(
-			`email: z.string().email().refine((v) => ["example.com", "test.com"].includes(v.split('@')[1]))`
+			`email: z.string().email().refine((v) => ['example.com', 'test.com'].includes(v.split('@')[1]))`
 		)
 	})
 
@@ -194,7 +194,7 @@ describe('emailFieldSchema', () => {
 				exceptDomains: ['spam.com'],
 				onlyDomains: [],
 			})
-		).toBe(`email: z.string().email().refine((v) => !["spam.com"].includes(v.split('@')[1]))`)
+		).toBe(`email: z.string().email().refine((v) => !['spam.com'].includes(v.split('@')[1]))`)
 	})
 })
 
@@ -217,7 +217,7 @@ describe('urlFieldSchema', () => {
 				onlyDomains: ['example.com'],
 			})
 		).toBe(
-			'website: z.string().url().refine((v) => ["example.com"].some((domain) => v.includes(domain)))'
+			`website: z.string().url().refine((v) => ['example.com'].some((domain) => v.includes(domain)))`
 		)
 	})
 
@@ -229,7 +229,7 @@ describe('urlFieldSchema', () => {
 				onlyDomains: [],
 			})
 		).toBe(
-			'website: z.string().url().refine((v) => ["spam.com"].every((domain) => !v.includes(domain)))'
+			`website: z.string().url().refine((v) => ['spam.com'].every((domain) => !v.includes(domain)))`
 		)
 	})
 })
@@ -305,7 +305,7 @@ describe('selectFieldSchema', () => {
 				required: false,
 				isMultiple: () => false,
 			})
-		).toBe('status: z.enum(["active", "inactive"])')
+		).toBe("status: z.enum(['active', 'inactive'])")
 	})
 
 	it('should generate array schema for multiple select', ({ expect }) => {
@@ -317,7 +317,7 @@ describe('selectFieldSchema', () => {
 				required: false,
 				isMultiple: () => true,
 			})
-		).toBe('tags: z.enum(["news", "tech", "sports"]).array()')
+		).toBe("tags: z.enum(['news', 'tech', 'sports']).array()")
 	})
 
 	it('should add nonempty() when required and multiple', ({ expect }) => {
@@ -329,7 +329,7 @@ describe('selectFieldSchema', () => {
 				required: true,
 				isMultiple: () => true,
 			})
-		).toBe('categories: z.enum(["A", "B", "C"]).array().nonempty()')
+		).toBe("categories: z.enum(['A', 'B', 'C']).array().nonempty()")
 	})
 
 	it('should add max constraint when maxSelect provided', ({ expect }) => {
@@ -341,7 +341,7 @@ describe('selectFieldSchema', () => {
 				required: false,
 				isMultiple: () => true,
 			})
-		).toBe('options: z.enum(["x", "y", "z"]).array().max(2)')
+		).toBe("options: z.enum(['x', 'y', 'z']).array().max(2)")
 	})
 })
 
