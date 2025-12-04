@@ -25,10 +25,11 @@ export function generateTsSchema(
 		(c) => includeSystemCollections || !c.system
 	)
 
+	const banner = config.tsSchema.banner ? config.tsSchema.banner.join('\n') + '\n\n' : ''
 	const collectionInterfaces = getCollectionInterfaces(collections)
 	const pbTsSchema = getPbTsSchema(collections)
 
-	return format(collectionInterfaces + pbTsSchema)
+	return format(banner + collectionInterfaces + pbTsSchema)
 }
 
 function getCollectionInterfaces(collections: Array<core.Collection>) {

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- remove `importStatements` option in favour of `banner`
 
 ## 0.6.2
 

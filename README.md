@@ -13,36 +13,52 @@ PocketBase hook for automatically generating schemas for Zod and [pocketbase-ts]
 
 The generated schema will have field options in docstrings, so you will get additional information like `required`, `min`, and `max` when you hover over properties in your IDE.
 
-## Configuration Options and Defaults
+## Configuration
 
-```jsonc
-{
-    // If set to true, the schema will be exposed through an HTTP endpoint
-    "exposeEndpoint": false,
-    // Path for the schema endpoint
-    "endpointPath": "/schema",
-    // If set to true, the schema endpoint will require authentication
-    "secureEndpoint": true,
+The `config.json` file should follow the structure below.
 
-    "tsSchema": {
-        // If set to true, schema file for pocketbase-ts will be generated
-        "generateFile": true,
-        // If set to true, field metadata will be included as JSDoc comments
-        "includeDocs": true,
-        // If set to true, system collections like _superusers and _otps in the schema will be included
-        "includeSystemCollections": false,
-        // File path where the generated schema will be saved
-        "outputPath": "./tsSchema.ts",
-    },
+```ts
+interface Config {
+    /** Whether to register the HTTP endpoint that serves the generated schemas. */
+    exposeEndpoint: boolean
 
-    "zodSchema": {
-        // If set to true, Zod schema file will be generated
-        "generateFile": true,
-        // If set to true, system collections like _superusers and _otps in the schema will be included
-        "includeSystemCollections": false,
-        // File path where the Zod schema will be saved
-        "outputPath": "./zodSchema.ts",
-    },
+    /** Path at which the schema endpoint will be exposed (e.g. \"/schema\"). */
+    endpointPath: string
+
+    /** Whether the schema endpoint should require authentication. */
+    secureEndpoint: boolean
+
+    /** Options controlling generation of the TypeScript schema file. */
+    tsSchema: BaseSchemaConfig & {
+        /** Whether to include JSDoc comments with field metadata in the generated schema. */
+        includeDocs: boolean
+    }
+
+    /** Options controlling generation of the Zod schema file. */
+    zodSchema: BaseSchemaConfig
+}
+
+interface BaseSchemaConfig {
+    /** Whether to generate and write the schema file to disk. */
+    generateFile: boolean
+
+    /** Whether to include system collections like _superusers and _otps when generating the schema. */
+    includeSystemCollections: boolean
+
+    /** File path where the generated schema will be written. Also used for the default filename when downloading from web UI. */
+    outputPath: string
+
+    /** Array of strings to insert at the top of the generated schema file. Use this to import custom schema for overrides. */
+    banner?: string[]
+
+    /** Specify the shape of JSON fields here. */
+    overrides?: {
+        /** Names of collections with JSON fields. */
+        [collectionName: string]: {
+            /** Name of the JSON field as key, and the shape of JSON as value. */
+            [fieldName: string]: string
+        }
+    }
 }
 ```
 
@@ -72,10 +88,10 @@ For example, if you have a collection called `users` with a JSON field called `p
 }
 ```
 
-Or for more complex types, you can define them in a separate file and import them like this:
+Or for more complex types, you can define them in a separate file and reference them:
 
 ```ts
-// types.ts
+// jsonSchema.ts
 
 export interface UserProfile {
     name: string
@@ -92,7 +108,7 @@ export interface UserProfile {
         // ...
         "overrides": {
             "users": {
-                "profile": "import('./types.ts').UserProfile",
+                "profile": "import('./jsonSchema.ts').UserProfile",
             },
         },
     },
@@ -100,7 +116,27 @@ export interface UserProfile {
 }
 ```
 
-This applies to view collection fields as well.  
+or
+
+```jsonc
+// config.json
+
+{
+    // ...
+    "tsSchema": {
+        // ...
+        // specify import statements that need to be added to the top of the generated file
+        "banner": ["import type { UserProfile } from './jsonSchema.ts'"],
+        "overrides": {
+            "users": {
+                "profile": "UserProfile",
+            },
+        },
+    },
+}
+```
+
+This also applies to view collection fields.  
 If you have a view collection and some fields are typed as `any`, it is because PocketBase treats them as JSON fields.  
 You can override them the same way as above.
 
@@ -108,6 +144,8 @@ You can override them the same way as above.
 
 JSON fields are `z.unknown()` by default.  
 You can override this just like above.
+
+#### Inline:
 
 ```jsonc
 // config.json
@@ -125,10 +163,10 @@ You can override this just like above.
 }
 ```
 
-If you want to define zod schemas in a separate file and import them, you can do it like this:
+#### Reference a schema from another file:
 
 ```ts
-// zodSchema.ts
+// jsonSchema.ts
 
 export const userProfileSchema = z.object({
     name: z.string(),
@@ -143,9 +181,8 @@ export const userProfileSchema = z.object({
     // ...
     "zodSchema": {
         // ...
+        "banner": ["import { userProfileSchema } from './jsonSchema.ts'"],
         "overrides": {
-            // specify import statements that need to be added to the top of the generated file
-            "importStatements": ["import { userProfileSchema } from './zodSchema.ts'"],
             "users": {
                 "profile": "userProfileSchema",
             },

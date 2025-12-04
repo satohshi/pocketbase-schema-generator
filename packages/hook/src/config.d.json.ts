@@ -2,28 +2,18 @@ declare const config: {
 	exposeEndpoint: boolean
 	endpointPath: string
 	secureEndpoint: boolean
+	tsSchema: BaseSchemaConfig & { includeDocs: boolean }
+	zodSchema: BaseSchemaConfig
+}
 
-	tsSchema: {
-		generateFile: boolean
-		includeDocs: boolean
-		includeSystemCollections: boolean
-		outputPath: string
-		overrides?: {
-			[collectionName: string]: {
-				[fieldName: string]: string
-			}
-		}
-	}
-
-	zodSchema: {
-		generateFile: boolean
-		includeSystemCollections: boolean
-		outputPath: string
-		overrides?: {
-			importStatements?: string[]
-			[collectionName: string]: {
-				[fieldName: string]: string
-			}
+type BaseSchemaConfig = {
+	generateFile: boolean
+	outputPath: string
+	includeSystemCollections: boolean
+	banner?: string[]
+	overrides?: {
+		[collectionName: string]: {
+			[fieldName: string]: string
 		}
 	}
 }

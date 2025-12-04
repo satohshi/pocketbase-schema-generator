@@ -113,13 +113,15 @@ export const generateZodSchema = (
 		schema += '})\n\n'
 	}
 
-	const imports = ["import { z } from 'zod'"]
+	const banner = []
 
-	if (overrides?.importStatements) {
-		imports.push(...overrides.importStatements)
+	if (config.zodSchema.banner) {
+		banner.push(...config.zodSchema.banner)
 	}
 
-	let result = imports.join('\n') + '\n\n'
+	banner.push("import { z } from 'zod'")
+
+	let result = banner.join('\n') + '\n\n'
 
 	if (shouldAddDateRegex) {
 		result += `const DATETIME_REGEX = ${DATETIME_REGEX}\n\n`
