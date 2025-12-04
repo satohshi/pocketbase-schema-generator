@@ -1,7 +1,5 @@
 {
 	"exposeEndpoint": false,
-	"endpointPath": "/schema",
-	"secureEndpoint": true,
 
 	"tsSchema": {
 		"generateFile": true,

@@ -22,11 +22,11 @@ interface Config {
     /** Whether to register the HTTP endpoint that serves the generated schemas. */
     exposeEndpoint: boolean
 
-    /** Path at which the schema endpoint will be exposed (e.g. \"/schema\"). */
-    endpointPath: string
+    /** Path at which the schema endpoint will be exposed (e.g. \"/schema\"). Required if `exposeEndpoint` is set to `true`. */
+    endpointPath?: string
 
-    /** Whether the schema endpoint should require authentication. */
-    secureEndpoint: boolean
+    /** Whether the schema endpoint should require authentication. Required if `exposeEndpoint` is set to `true`. */
+    secureEndpoint?: boolean
 
     /** Options controlling generation of the TypeScript schema file. */
     tsSchema: BaseSchemaConfig & {
@@ -45,8 +45,8 @@ interface BaseSchemaConfig {
     /** Whether to include system collections like _superusers and _otps when generating the schema. */
     includeSystemCollections: boolean
 
-    /** File path where the generated schema will be written. Also used for the default filename when downloading from web UI. */
-    outputPath: string
+    /** File path where the generated schema will be written. Also used for the default filename when downloading from web UI. Required if `generateFile` is set to `true` */
+    outputPath?: string
 
     /** Array of strings to insert at the top of the generated schema file. Use this to import custom schema for overrides. */
     banner?: string[]

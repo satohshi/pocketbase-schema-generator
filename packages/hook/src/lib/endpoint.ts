@@ -5,10 +5,14 @@ import { generateZodSchema } from './zod/generate-zod-schema'
 
 export function renderSchema(e: core.RequestEvent, showLogOut: boolean) {
 	const tsSchema = generateTsSchema()
-	const tsFilename = extractFilename(config.tsSchema.outputPath)
+	const tsFilename = config.tsSchema.outputPath
+		? extractFilename(config.tsSchema.outputPath)
+		: 'tsSchema.ts'
 
 	const zodSchema = generateZodSchema()
-	const zodFilename = extractFilename(config.zodSchema.outputPath)
+	const zodFilename = config.zodSchema.outputPath
+		? extractFilename(config.zodSchema.outputPath)
+		: 'zodSchema.ts'
 
 	const html = $template.loadFiles(`${__hooks}/views/index.html`).render({
 		tsSchema,

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - remove `importStatements` option in favour of `banner`
+- make options like `outputPath` optional when they're not needed
 
 ## 0.6.2
 
