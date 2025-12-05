@@ -20,11 +20,9 @@ import {
 import config from '../../config.json'
 import type { CollectionTypeName } from '../types'
 
-export function generateTsSchema(
-	includeSystemCollections = config.tsSchema.includeSystemCollections
-) {
+export function generateTsSchema() {
 	const collections = ($app.findAllCollections() as Array<core.Collection>).filter(
-		(c) => includeSystemCollections || !c.system
+		(c) => config.tsSchema.includeSystemCollections || !c.system
 	)
 
 	const banner = config.tsSchema.banner ? config.tsSchema.banner.join('\n') + '\n\n' : ''

@@ -12,6 +12,12 @@ import {
 	urlFieldSchema,
 } from './field-handlers'
 
+/**
+ * Some field options are null when they're not set (like `min` and `max` in `NumberField`),
+ * but they're non-nullable in types provided by PocketBase.
+ * So `as any` is okay here.
+ */
+
 describe('textFieldSchema', () => {
 	it('should generate basic string schema', ({ expect }) => {
 		expect(
@@ -21,7 +27,7 @@ describe('textFieldSchema', () => {
 				min: 0,
 				max: 0,
 				required: false,
-			})
+			} as any)
 		).toBe('title: z.string()')
 	})
 
@@ -33,7 +39,7 @@ describe('textFieldSchema', () => {
 				min: 0,
 				max: 0,
 				required: false,
-			})
+			} as any)
 		).toBe('code: z.string().regex(/[A-Z]+/)')
 	})
 
@@ -45,7 +51,7 @@ describe('textFieldSchema', () => {
 				min: 4,
 				max: 4,
 				required: false,
-			})
+			} as any)
 		).toBe('pin: z.string().length(4)')
 	})
 
@@ -57,7 +63,7 @@ describe('textFieldSchema', () => {
 				min: 3,
 				max: 20,
 				required: false,
-			})
+			} as any)
 		).toBe('username: z.string().min(3).max(20)')
 	})
 
@@ -69,7 +75,7 @@ describe('textFieldSchema', () => {
 				min: 0,
 				max: 0,
 				required: true,
-			})
+			} as any)
 		).toBe('required_field: z.string().min(1)')
 	})
 })
@@ -80,7 +86,7 @@ describe('editorFieldSchema', () => {
 			editorFieldSchema({
 				name: 'content',
 				required: false,
-			})
+			} as any)
 		).toBe('content: z.string()')
 	})
 
@@ -89,7 +95,7 @@ describe('editorFieldSchema', () => {
 			editorFieldSchema({
 				name: 'content',
 				required: true,
-			})
+			} as any)
 		).toBe('content: z.string().min(1)')
 	})
 })
@@ -103,7 +109,7 @@ describe('numberFieldSchema', () => {
 				min: undefined,
 				max: undefined,
 				required: false,
-			})
+			} as any)
 		).toBe('amount: z.number()')
 	})
 
@@ -115,7 +121,7 @@ describe('numberFieldSchema', () => {
 				min: undefined,
 				max: undefined,
 				required: false,
-			})
+			} as any)
 		).toBe('count: z.number().int()')
 	})
 
@@ -127,7 +133,7 @@ describe('numberFieldSchema', () => {
 				min: 1,
 				max: 5,
 				required: false,
-			})
+			} as any)
 		).toBe('rating: z.number().min(1).max(5)')
 	})
 
@@ -139,7 +145,7 @@ describe('numberFieldSchema', () => {
 				min: undefined,
 				max: undefined,
 				required: true,
-			})
+			} as any)
 		).toBe('quantity: z.number().refine((n) => n !== 0)')
 	})
 })
@@ -150,7 +156,7 @@ describe('boolFieldSchema', () => {
 			boolFieldSchema({
 				name: 'active',
 				required: false,
-			})
+			} as any)
 		).toBe('active: z.boolean()')
 	})
 
@@ -159,7 +165,7 @@ describe('boolFieldSchema', () => {
 			boolFieldSchema({
 				name: 'terms',
 				required: true,
-			})
+			} as any)
 		).toBe('terms: z.literal(true)')
 	})
 })
@@ -171,7 +177,7 @@ describe('emailFieldSchema', () => {
 				name: 'email',
 				exceptDomains: [],
 				onlyDomains: [],
-			})
+			} as any)
 		).toBe('email: z.string().email()')
 	})
 
@@ -181,7 +187,7 @@ describe('emailFieldSchema', () => {
 				name: 'email',
 				exceptDomains: [],
 				onlyDomains: ['example.com', 'test.com'],
-			})
+			} as any)
 		).toBe(
 			`email: z.string().email().refine((v) => ['example.com', 'test.com'].includes(v.split('@')[1]))`
 		)
@@ -193,7 +199,7 @@ describe('emailFieldSchema', () => {
 				name: 'email',
 				exceptDomains: ['spam.com'],
 				onlyDomains: [],
-			})
+			} as any)
 		).toBe(`email: z.string().email().refine((v) => !['spam.com'].includes(v.split('@')[1]))`)
 	})
 })
@@ -205,7 +211,7 @@ describe('urlFieldSchema', () => {
 				name: 'website',
 				exceptDomains: [],
 				onlyDomains: [],
-			})
+			} as any)
 		).toBe('website: z.string().url()')
 	})
 
@@ -215,7 +221,7 @@ describe('urlFieldSchema', () => {
 				name: 'website',
 				exceptDomains: [],
 				onlyDomains: ['example.com'],
-			})
+			} as any)
 		).toBe(
 			`website: z.string().url().refine((v) => ['example.com'].some((domain) => v.includes(domain)))`
 		)
@@ -227,7 +233,7 @@ describe('urlFieldSchema', () => {
 				name: 'website',
 				exceptDomains: ['spam.com'],
 				onlyDomains: [],
-			})
+			} as any)
 		).toBe(
 			`website: z.string().url().refine((v) => ['spam.com'].every((domain) => !v.includes(domain)))`
 		)
@@ -241,7 +247,7 @@ describe('dateFieldSchema', () => {
 				name: 'created',
 				min: { string: () => '' },
 				max: { string: () => '' },
-			})
+			} as any)
 		).toBe('created: z.string().regex(DATETIME_REGEX)')
 	})
 
@@ -251,7 +257,7 @@ describe('dateFieldSchema', () => {
 				name: 'start',
 				min: { string: () => '2023-01-01' },
 				max: { string: () => '' },
-			})
+			} as any)
 		).toBe(
 			'start: z.string().regex(DATETIME_REGEX).refine((v) => {\n' +
 				'        const date = new Date(v)\n' +
@@ -267,7 +273,7 @@ describe('dateFieldSchema', () => {
 				name: 'end',
 				min: { string: () => '' },
 				max: { string: () => '2023-12-31' },
-			})
+			} as any)
 		).toBe(
 			'end: z.string().regex(DATETIME_REGEX).refine((v) => {\n' +
 				'        const date = new Date(v)\n' +
@@ -283,7 +289,7 @@ describe('dateFieldSchema', () => {
 				name: 'period',
 				min: { string: () => '2023-01-01' },
 				max: { string: () => '2023-12-31' },
-			})
+			} as any)
 		).toBe(
 			'period: z.string().regex(DATETIME_REGEX).refine((v) => {\n' +
 				'        const date = new Date(v)\n' +
@@ -304,7 +310,7 @@ describe('selectFieldSchema', () => {
 				maxSelect: undefined,
 				required: false,
 				isMultiple: () => false,
-			})
+			} as any)
 		).toBe("status: z.enum(['active', 'inactive'])")
 	})
 
@@ -316,7 +322,7 @@ describe('selectFieldSchema', () => {
 				maxSelect: undefined,
 				required: false,
 				isMultiple: () => true,
-			})
+			} as any)
 		).toBe("tags: z.enum(['news', 'tech', 'sports']).array()")
 	})
 
@@ -328,7 +334,7 @@ describe('selectFieldSchema', () => {
 				maxSelect: undefined,
 				required: true,
 				isMultiple: () => true,
-			})
+			} as any)
 		).toBe("categories: z.enum(['A', 'B', 'C']).array().nonempty()")
 	})
 
@@ -340,7 +346,7 @@ describe('selectFieldSchema', () => {
 				maxSelect: 2,
 				required: false,
 				isMultiple: () => true,
-			})
+			} as any)
 		).toBe("options: z.enum(['x', 'y', 'z']).array().max(2)")
 	})
 })
@@ -353,7 +359,7 @@ describe('fileFieldSchema', () => {
 				maxSelect: undefined,
 				required: false,
 				isMultiple: () => false,
-			})
+			} as any)
 		).toBe('avatar: z.string()')
 	})
 
@@ -364,7 +370,7 @@ describe('fileFieldSchema', () => {
 				maxSelect: undefined,
 				required: false,
 				isMultiple: () => true,
-			})
+			} as any)
 		).toBe('attachments: z.string().array()')
 	})
 
@@ -375,7 +381,7 @@ describe('fileFieldSchema', () => {
 				maxSelect: undefined,
 				required: true,
 				isMultiple: () => true,
-			})
+			} as any)
 		).toBe('documents: z.string().array().nonempty()')
 	})
 
@@ -386,7 +392,7 @@ describe('fileFieldSchema', () => {
 				maxSelect: 5,
 				required: false,
 				isMultiple: () => true,
-			})
+			} as any)
 		).toBe('photos: z.string().array().max(5)')
 	})
 })
@@ -401,7 +407,7 @@ describe('relationFieldSchema', () => {
 				required: false,
 				isMultiple: () => false,
 				targetIdSchema: 'z.string().regex(/^[a-z0-9]+$/).length(15)',
-			})
+			} as any)
 		).toBe('author: z.string().regex(/^[a-z0-9]+$/).length(15)')
 	})
 
@@ -414,7 +420,7 @@ describe('relationFieldSchema', () => {
 				required: false,
 				isMultiple: () => true,
 				targetIdSchema: 'z.string().regex(/^[a-z0-9]+$/).length(15)',
-			})
+			} as any)
 		).toBe('categories: z.string().regex(/^[a-z0-9]+$/).length(15).array()')
 	})
 
@@ -427,7 +433,7 @@ describe('relationFieldSchema', () => {
 				required: true,
 				isMultiple: () => true,
 				targetIdSchema: 'z.string().regex(/^[a-z0-9]+$/).length(15)',
-			})
+			} as any)
 		).toBe('tags: z.string().regex(/^[a-z0-9]+$/).length(15).array().nonempty()')
 	})
 
@@ -440,7 +446,7 @@ describe('relationFieldSchema', () => {
 				required: false,
 				isMultiple: () => true,
 				targetIdSchema: 'z.string().regex(/^[a-z0-9]+$/).length(15)',
-			})
+			} as any)
 		).toBe('references: z.string().regex(/^[a-z0-9]+$/).length(15).array().min(2).max(5)')
 	})
 })

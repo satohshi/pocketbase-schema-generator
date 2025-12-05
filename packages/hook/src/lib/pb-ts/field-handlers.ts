@@ -1,16 +1,14 @@
 import { generateMDTable } from '../utils'
 import config from '../../config.json'
 
-export function collectionIdSchema(
-	collectionId: string,
-	includeDocs = config.tsSchema.includeDocs
-): string {
+export function collectionIdSchema(collectionId: string): string {
 	const typeDef = `collectionId: '${collectionId}'`
-	if (!includeDocs) return typeDef
+	if (!config.tsSchema.includeDocs) return typeDef
 
 	const rows: [string, string][] = [
 		['type', 'text'],
-		['length', `${collectionId.length}`],
+		['min', `1`],
+		['min', `100`],
 	]
 
 	const docs = generateMDTable(rows)
@@ -18,12 +16,9 @@ export function collectionIdSchema(
 	return `${docs}\n${typeDef}\n`
 }
 
-export function collectionNameSchema(
-	collectionName: string,
-	includeDocs = config.tsSchema.includeDocs
-): string {
+export function collectionNameSchema(collectionName: string): string {
 	const typeDef = `collectionName: '${collectionName}' | (string & {})`
-	if (!includeDocs) return typeDef
+	if (!config.tsSchema.includeDocs) return typeDef
 
 	const rows: [string, string][] = [
 		['type', 'text'],
@@ -37,12 +32,17 @@ export function collectionNameSchema(
 	return `${docs}\n${typeDef}\n`
 }
 
-export function textFieldSchema(
-	{ name, hidden, min, max, pattern, autogeneratePattern, required }: TextField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function textFieldSchema({
+	name,
+	hidden,
+	min,
+	max,
+	pattern,
+	autogeneratePattern,
+	required,
+}: TextField): [string, string] {
 	const typeDef = `${name}: string`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const rows: [string, string][] = [
 		['type', 'text'],
@@ -60,12 +60,16 @@ export function textFieldSchema(
 	return [typeDef, docs]
 }
 
-export function passwordFieldSchema(
-	{ name, hidden, min, max, pattern, required }: PasswordField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function passwordFieldSchema({
+	name,
+	hidden,
+	min,
+	max,
+	pattern,
+	required,
+}: PasswordField): [string, string] {
 	const typeDef = `${name}: string`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const rows: [string, string][] = [
 		['type', 'password'],
@@ -82,12 +86,15 @@ export function passwordFieldSchema(
 	return [typeDef, docs]
 }
 
-export function editorFieldSchema(
-	{ name, hidden, maxSize, convertURLs, required }: EditorField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function editorFieldSchema({
+	name,
+	hidden,
+	maxSize,
+	convertURLs,
+	required,
+}: EditorField): [string, string] {
 	const typeDef = `${name}: string`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const rows: [string, string][] = [
 		['type', 'editor'],
@@ -102,12 +109,16 @@ export function editorFieldSchema(
 	return [typeDef, docs]
 }
 
-export function numberFieldSchema(
-	{ name, hidden, min, max, onlyInt, required }: NumberField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function numberFieldSchema({
+	name,
+	hidden,
+	min,
+	max,
+	onlyInt,
+	required,
+}: NumberField): [string, string] {
 	const typeDef = `${name}: number`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const rows: [string, string][] = [
 		['type', 'number'],
@@ -124,12 +135,9 @@ export function numberFieldSchema(
 	return [typeDef, docs]
 }
 
-export function boolFieldSchema(
-	{ name, hidden, required }: BoolField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function boolFieldSchema({ name, hidden, required }: BoolField): [string, string] {
 	const typeDef = `${name}: ${required ? 'true' : 'boolean'}`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const docs = generateMDTable([
 		['type', 'bool'],
@@ -139,12 +147,15 @@ export function boolFieldSchema(
 	return [typeDef, docs]
 }
 
-export function emailFieldSchema(
-	{ name, hidden, exceptDomains, onlyDomains, required }: EmailField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function emailFieldSchema({
+	name,
+	hidden,
+	exceptDomains,
+	onlyDomains,
+	required,
+}: EmailField): [string, string] {
 	const typeDef = `${name}: string`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const rows: [string, string][] = [
 		['type', 'email'],
@@ -160,12 +171,15 @@ export function emailFieldSchema(
 	return [typeDef, docs]
 }
 
-export function urlFieldSchema(
-	{ name, hidden, exceptDomains, onlyDomains, required }: URLField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function urlFieldSchema({
+	name,
+	hidden,
+	exceptDomains,
+	onlyDomains,
+	required,
+}: URLField): [string, string] {
 	const typeDef = `${name}: string`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const rows: [string, string][] = [
 		['type', 'email'],
@@ -181,12 +195,9 @@ export function urlFieldSchema(
 	return [typeDef, docs]
 }
 
-export function dateFieldSchema(
-	{ name, hidden, min, max, required }: DateField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function dateFieldSchema({ name, hidden, min, max, required }: DateField): [string, string] {
 	const typeDef = `${name}: string`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const minDateStr = min.toString()
 	const maxDateStr = max.toString()
@@ -205,12 +216,14 @@ export function dateFieldSchema(
 	return [typeDef, docs]
 }
 
-export function autodateFieldSchema(
-	{ name, hidden, onCreate, onUpdate }: AutodateField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function autodateFieldSchema({
+	name,
+	hidden,
+	onCreate,
+	onUpdate,
+}: AutodateField): [string, string] {
 	const typeDef = `${name}: string`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const docs = generateMDTable([
 		['type', 'autodate'],
@@ -222,17 +235,21 @@ export function autodateFieldSchema(
 	return [typeDef, docs]
 }
 
-export function selectFieldSchema(
-	{ name, hidden, values, maxSelect, required, isMultiple }: SelectField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function selectFieldSchema({
+	name,
+	hidden,
+	values,
+	maxSelect,
+	required,
+	isMultiple,
+}: SelectField): [string, string] {
 	const multiple = isMultiple()
 	const options = values.map((v: string) => `'${v.replace(/([\\'])/g, '\\$1')}'`).join(' | ')
 
 	const typeDef = `${name}: ${
 		multiple ? (required ? `[${options}, ...(${options})[]]` : `(${options})[]`) : options
 	}`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const rows: [string, string][] = [
 		['type', `select${multiple ? ' (multiple)' : '(single)'}`],
@@ -247,24 +264,21 @@ export function selectFieldSchema(
 	return [typeDef, docs]
 }
 
-export function fileFieldSchema(
-	{
-		name,
-		hidden,
-		maxSize,
-		maxSelect,
-		mimeTypes,
-		thumbs,
-		protected: $protected,
-		required,
-		isMultiple,
-	}: FileField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function fileFieldSchema({
+	name,
+	hidden,
+	maxSize,
+	maxSelect,
+	mimeTypes,
+	thumbs,
+	protected: $protected,
+	required,
+	isMultiple,
+}: FileField): [string, string] {
 	const multiple = isMultiple()
 
 	const typeDef = `${name}: ${multiple ? (required ? `[string, ...string[]]` : `string[]`) : 'string'}`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const rows: [string, string][] = [
 		['type', `file${multiple ? ' (multiple)' : '(single)'}`],
@@ -282,24 +296,21 @@ export function fileFieldSchema(
 	return [typeDef, docs]
 }
 
-export function relationFieldSchema(
-	{
-		name,
-		hidden,
-		collectionId,
-		collectionName,
-		cascadeDelete,
-		minSelect,
-		maxSelect,
-		required,
-		isMultiple,
-	}: RelationField & { collectionName: string },
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function relationFieldSchema({
+	name,
+	hidden,
+	collectionId,
+	collectionName,
+	cascadeDelete,
+	minSelect,
+	maxSelect,
+	required,
+	isMultiple,
+}: RelationField & { collectionName: string }): [string, string] {
 	const multiple = isMultiple()
 
 	const typeDef = `${name}: ${multiple ? (required ? `[string, ...string[]]` : `string[]`) : 'string'}`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const rows: [string, string][] = [
 		['type', `relation${multiple ? ' (multiple)' : '(single)'}`],
@@ -318,12 +329,15 @@ export function relationFieldSchema(
 	return [typeDef, docs]
 }
 
-export function jsonFieldSchema(
-	{ name, hidden, maxSize, required, override }: JSONField & { override: string | undefined },
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function jsonFieldSchema({
+	name,
+	hidden,
+	maxSize,
+	required,
+	override,
+}: JSONField & { override: string | undefined }): [string, string] {
 	const typeDef = `${name}: ${override ?? 'any'}`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const docs = generateMDTable([
 		['type', 'json'],
@@ -335,12 +349,9 @@ export function jsonFieldSchema(
 	return [typeDef, docs]
 }
 
-export function geoPointSchema(
-	{ name, hidden, required }: GeoPointField,
-	includeDocs = config.tsSchema.includeDocs
-): [string, string] {
+export function geoPointSchema({ name, hidden, required }: GeoPointField): [string, string] {
 	const typeDef = `${name}: { lon: number; lat: number }`
-	if (!includeDocs) return [typeDef, '']
+	if (!config.tsSchema.includeDocs) return [typeDef, '']
 
 	const docs = generateMDTable([
 		['type', 'geoPoint'],

@@ -1,20 +1,35 @@
 import { describe, it, vi, afterEach } from 'vitest'
 import { generateZodSchema } from './generate-zod-schema'
 
+function setIncludeSystemCollections(value: boolean): void {
+	vi.doMock('../../config.json', () => {
+		return {
+			default: {
+				zodSchema: {
+					includeSystemCollections: value,
+				},
+			},
+		}
+	})
+}
+
 describe('generateZodSchema', () => {
 	afterEach(() => {
 		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
 	})
 
-	it('should import zod', ({ expect }) => {
+	it('should import zod', async ({ expect }) => {
 		vi.stubGlobal('$app', {
 			findAllCollections: vi.fn().mockReturnValue([]),
 		})
+
 		const result = generateZodSchema()
 		expect(result).toContain("import { z } from 'zod'")
 	})
 
-	it('should generate schema with datetime regex when date fields exist', ({ expect }) => {
+	it('should generate schema with datetime regex when date fields exist', async ({ expect }) => {
 		const mockCollections = [
 			{
 				id: '123',
@@ -43,7 +58,9 @@ describe('generateZodSchema', () => {
 		expect(result).toContain('DATETIME_REGEX')
 	})
 
-	it('should generate schema with datetime regex when autodate fields exist', ({ expect }) => {
+	it('should generate schema with datetime regex when autodate fields exist', async ({
+		expect,
+	}) => {
 		const mockCollections = [
 			{
 				id: '123',
@@ -72,7 +89,9 @@ describe('generateZodSchema', () => {
 		expect(result).toContain('DATETIME_REGEX')
 	})
 
-	it('should not generate schema with datetime regex when no date fields exist', ({ expect }) => {
+	it('should not generate schema with datetime regex when no date fields exist', async ({
+		expect,
+	}) => {
 		const mockCollections = [
 			{
 				id: '123',
@@ -99,7 +118,7 @@ describe('generateZodSchema', () => {
 		expect(result).not.toContain('DATETIME_REGEX')
 	})
 
-	it('should only generate schema for non-system collections when the option is set to false', ({
+	it('should only generate schema for non-system collections when the option is set to false', async ({
 		expect,
 	}) => {
 		const mockCollections = [
@@ -123,12 +142,15 @@ describe('generateZodSchema', () => {
 		vi.stubGlobal('$app', {
 			findAllCollections: vi.fn().mockReturnValue(mockCollections),
 		})
+		setIncludeSystemCollections(false)
+
+		const { generateZodSchema } = await import('./generate-zod-schema')
 
 		const result = generateZodSchema()
 		expect(result).not.toContain('systemSchema')
 	})
 
-	it('should generate schema for all collections when the option is set to true', ({
+	it('should generate schema for all collections when the option is set to true', async ({
 		expect,
 	}) => {
 		const mockCollections = [
@@ -152,8 +174,11 @@ describe('generateZodSchema', () => {
 		vi.stubGlobal('$app', {
 			findAllCollections: vi.fn().mockReturnValue(mockCollections),
 		})
+		setIncludeSystemCollections(true)
 
-		const result = generateZodSchema(true)
+		const { generateZodSchema } = await import('./generate-zod-schema')
+
+		const result = generateZodSchema()
 		expect(result).toContain('systemSchema')
 	})
 })

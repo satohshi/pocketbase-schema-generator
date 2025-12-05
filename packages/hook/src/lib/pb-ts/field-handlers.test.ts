@@ -1,23 +1,34 @@
-import { describe, it } from 'vitest'
-import {
-	autodateFieldSchema,
-	boolFieldSchema,
-	dateFieldSchema,
-	editorFieldSchema,
-	emailFieldSchema,
-	fileFieldSchema,
-	jsonFieldSchema,
-	numberFieldSchema,
-	passwordFieldSchema,
-	relationFieldSchema,
-	selectFieldSchema,
-	textFieldSchema,
-	urlFieldSchema,
-} from './field-handlers'
+import { afterEach, describe, it, vi } from 'vitest'
 import { generateMDTable } from '../utils'
 
+function setIncludeDocs(value: boolean): void {
+	vi.doMock('../../config.json', () => {
+		return {
+			default: {
+				tsSchema: {
+					includeDocs: value,
+				},
+			},
+		}
+	})
+}
+
+/**
+ * Some field options are null when they're not set (like `min` and `max` in `NumberField`),
+ * but they're non-nullable in types provided by PocketBase.
+ * So `as any` is okay here.
+ */
+
 describe('textFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'title',
 			hidden: false,
@@ -28,13 +39,16 @@ describe('textFieldSchema', () => {
 			required: false,
 		}
 
-		const [schema, docs] = textFieldSchema(field, false)
+		const { textFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = textFieldSchema(field as any)
 
 		expect(schema).toBe('title: string')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', ({ expect }) => {
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'title',
 			hidden: true,
@@ -55,13 +69,16 @@ describe('textFieldSchema', () => {
 			['autogeneratePattern', '^[a-z]+$'],
 		])
 
-		const [schema, docs] = textFieldSchema(field, true)
+		const { textFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = textFieldSchema(field as any)
 
 		expect(schema).toBe('title: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit min if they're not set", ({ expect }) => {
+	it("should omit min if they're not set", async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'title',
 			hidden: false,
@@ -81,13 +98,16 @@ describe('textFieldSchema', () => {
 			['autogeneratePattern', '^[a-z]+$'],
 		])
 
-		const [schema, docs] = textFieldSchema(field, true)
+		const { textFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = textFieldSchema(field as any)
 
 		expect(schema).toBe('title: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit max if they're not set", ({ expect }) => {
+	it("should omit max if they're not set", async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'title',
 			hidden: false,
@@ -107,13 +127,16 @@ describe('textFieldSchema', () => {
 			['autogeneratePattern', '^[a-z]+$'],
 		])
 
-		const [schema, docs] = textFieldSchema(field, true)
+		const { textFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = textFieldSchema(field as any)
 
 		expect(schema).toBe('title: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit pattern if they're not set", ({ expect }) => {
+	it("should omit pattern if they're not set", async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'title',
 			hidden: false,
@@ -133,13 +156,16 @@ describe('textFieldSchema', () => {
 			['autogeneratePattern', '^[a-z]+$'],
 		])
 
-		const [schema, docs] = textFieldSchema(field, true)
+		const { textFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = textFieldSchema(field as any)
 
 		expect(schema).toBe('title: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit autogeneratePattern if they're not set", ({ expect }) => {
+	it("should omit autogeneratePattern if they're not set", async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'title',
 			hidden: false,
@@ -159,7 +185,8 @@ describe('textFieldSchema', () => {
 			['pattern', '^[a-z]+$'],
 		])
 
-		const [schema, docs] = textFieldSchema(field, true)
+		const { textFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = textFieldSchema(field as any)
 
 		expect(schema).toBe('title: string')
 		expect(docs).toBe(expectedDocs)
@@ -167,7 +194,15 @@ describe('textFieldSchema', () => {
 })
 
 describe('passwordFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'password',
 			hidden: false,
@@ -177,13 +212,16 @@ describe('passwordFieldSchema', () => {
 			required: false,
 		}
 
-		const [schema, docs] = passwordFieldSchema(field, false)
+		const { passwordFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = passwordFieldSchema(field as any)
 
 		expect(schema).toBe('password: string')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', ({ expect }) => {
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'password',
 			hidden: true,
@@ -202,13 +240,16 @@ describe('passwordFieldSchema', () => {
 			['pattern', '^[a-zA-Z0-9]+$'],
 		])
 
-		const [schema, docs] = passwordFieldSchema(field, true)
+		const { passwordFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = passwordFieldSchema(field as any)
 
 		expect(schema).toBe('password: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit min if it's not set", ({ expect }) => {
+	it("should omit min if it's not set", async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'password',
 			hidden: false,
@@ -226,13 +267,16 @@ describe('passwordFieldSchema', () => {
 			['pattern', '^[a-zA-Z0-9]+$'],
 		])
 
-		const [schema, docs] = passwordFieldSchema(field, true)
+		const { passwordFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = passwordFieldSchema(field as any)
 
 		expect(schema).toBe('password: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit max if it's not set", ({ expect }) => {
+	it("should omit max if it's not set", async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'password',
 			hidden: false,
@@ -250,13 +294,16 @@ describe('passwordFieldSchema', () => {
 			['pattern', '^[a-zA-Z0-9]+$'],
 		])
 
-		const [schema, docs] = passwordFieldSchema(field, true)
+		const { passwordFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = passwordFieldSchema(field as any)
 
 		expect(schema).toBe('password: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit pattern if it's not set", ({ expect }) => {
+	it("should omit pattern if it's not set", async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'password',
 			hidden: false,
@@ -274,7 +321,8 @@ describe('passwordFieldSchema', () => {
 			['max', '32'],
 		])
 
-		const [schema, docs] = passwordFieldSchema(field, true)
+		const { passwordFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = passwordFieldSchema(field as any)
 
 		expect(schema).toBe('password: string')
 		expect(docs).toBe(expectedDocs)
@@ -282,7 +330,15 @@ describe('passwordFieldSchema', () => {
 })
 
 describe('editorFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'content',
 			hidden: false,
@@ -291,13 +347,16 @@ describe('editorFieldSchema', () => {
 			required: false,
 		}
 
-		const [schema, docs] = editorFieldSchema(field, false)
+		const { editorFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = editorFieldSchema(field as any)
 
 		expect(schema).toBe('content: string')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', ({ expect }) => {
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'content',
 			hidden: true,
@@ -314,13 +373,16 @@ describe('editorFieldSchema', () => {
 			['maxSize', '1000'],
 		])
 
-		const [schema, docs] = editorFieldSchema(field, true)
+		const { editorFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = editorFieldSchema(field as any)
 
 		expect(schema).toBe('content: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit maxSize if it's not set", ({ expect }) => {
+	it("should omit maxSize if it's not set", async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'content',
 			hidden: false,
@@ -336,7 +398,8 @@ describe('editorFieldSchema', () => {
 			['convertURLs', 'true'],
 		])
 
-		const [schema, docs] = editorFieldSchema(field, true)
+		const { editorFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = editorFieldSchema(field as any)
 
 		expect(schema).toBe('content: string')
 		expect(docs).toBe(expectedDocs)
@@ -344,7 +407,15 @@ describe('editorFieldSchema', () => {
 })
 
 describe('numberFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'count',
 			hidden: false,
@@ -354,13 +425,16 @@ describe('numberFieldSchema', () => {
 			required: false,
 		}
 
-		const [schema, docs] = numberFieldSchema(field, false)
+		const { numberFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = numberFieldSchema(field as any)
 
 		expect(schema).toBe('count: number')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', ({ expect }) => {
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'count',
 			hidden: true,
@@ -379,13 +453,16 @@ describe('numberFieldSchema', () => {
 			['max', '100'],
 		])
 
-		const [schema, docs] = numberFieldSchema(field, true)
+		const { numberFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = numberFieldSchema(field as any)
 
 		expect(schema).toBe('count: number')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit min if it's null", ({ expect }) => {
+	it("should omit min if it's null", async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'count',
 			hidden: false,
@@ -403,13 +480,16 @@ describe('numberFieldSchema', () => {
 			['max', '100'],
 		])
 
-		const [schema, docs] = numberFieldSchema(field, true)
+		const { numberFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = numberFieldSchema(field as any)
 
 		expect(schema).toBe('count: number')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit max if it's null", ({ expect }) => {
+	it("should omit max if it's null", async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'count',
 			hidden: false,
@@ -427,7 +507,8 @@ describe('numberFieldSchema', () => {
 			['min', '0'],
 		])
 
-		const [schema, docs] = numberFieldSchema(field, true)
+		const { numberFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = numberFieldSchema(field as any)
 
 		expect(schema).toBe('count: number')
 		expect(docs).toBe(expectedDocs)
@@ -435,20 +516,31 @@ describe('numberFieldSchema', () => {
 })
 
 describe('boolFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'active',
 			hidden: false,
 			required: false,
 		}
 
-		const [schema, docs] = boolFieldSchema(field, false)
+		const { boolFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = boolFieldSchema(field as any)
 
 		expect(schema).toBe('active: boolean')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', ({ expect }) => {
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'active',
 			hidden: true,
@@ -460,13 +552,16 @@ describe('boolFieldSchema', () => {
 			['hidden', 'true'],
 		])
 
-		const [schema, docs] = boolFieldSchema(field, true)
+		const { boolFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = boolFieldSchema(field as any)
 
 		expect(schema).toBe('active: boolean')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return "true" type when required is true', ({ expect }) => {
+	it('should return "true" type when required is true', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'active',
 			hidden: false,
@@ -478,7 +573,8 @@ describe('boolFieldSchema', () => {
 			['hidden', 'false'],
 		])
 
-		const [schema, docs] = boolFieldSchema(field, true)
+		const { boolFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = boolFieldSchema(field as any)
 
 		expect(schema).toBe('active: true')
 		expect(docs).toBe(expectedDocs)
@@ -486,7 +582,15 @@ describe('boolFieldSchema', () => {
 })
 
 describe('emailFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'email',
 			hidden: false,
@@ -495,13 +599,16 @@ describe('emailFieldSchema', () => {
 			required: false,
 		}
 
-		const [schema, docs] = emailFieldSchema(field, false)
+		const { emailFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = emailFieldSchema(field as any)
 
 		expect(schema).toBe('email: string')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', ({ expect }) => {
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'email',
 			hidden: true,
@@ -518,13 +625,16 @@ describe('emailFieldSchema', () => {
 			['onlyDomains', 'allowed.com`, `valid.com'],
 		])
 
-		const [schema, docs] = emailFieldSchema(field, true)
+		const { emailFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = emailFieldSchema(field as any)
 
 		expect(schema).toBe('email: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit exceptDomains if empty', ({ expect }) => {
+	it('should omit exceptDomains if empty', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'email',
 			hidden: false,
@@ -540,13 +650,16 @@ describe('emailFieldSchema', () => {
 			['onlyDomains', 'allowed.com'],
 		])
 
-		const [schema, docs] = emailFieldSchema(field, true)
+		const { emailFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = emailFieldSchema(field as any)
 
 		expect(schema).toBe('email: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit onlyDomains if empty', ({ expect }) => {
+	it('should omit onlyDomains if empty', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'email',
 			hidden: false,
@@ -562,7 +675,8 @@ describe('emailFieldSchema', () => {
 			['exceptDomains', 'test.com'],
 		])
 
-		const [schema, docs] = emailFieldSchema(field, true)
+		const { emailFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = emailFieldSchema(field as any)
 
 		expect(schema).toBe('email: string')
 		expect(docs).toBe(expectedDocs)
@@ -570,7 +684,15 @@ describe('emailFieldSchema', () => {
 })
 
 describe('urlFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'website',
 			hidden: false,
@@ -579,13 +701,16 @@ describe('urlFieldSchema', () => {
 			required: false,
 		}
 
-		const [schema, docs] = urlFieldSchema(field, false)
+		const { urlFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = urlFieldSchema(field as any)
 
 		expect(schema).toBe('website: string')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', ({ expect }) => {
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'website',
 			hidden: true,
@@ -602,13 +727,16 @@ describe('urlFieldSchema', () => {
 			['onlyDomains', 'allowed.com`, `valid.com'],
 		])
 
-		const [schema, docs] = urlFieldSchema(field, true)
+		const { urlFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = urlFieldSchema(field as any)
 
 		expect(schema).toBe('website: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit exceptDomains if empty', ({ expect }) => {
+	it('should omit exceptDomains if empty', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'website',
 			hidden: false,
@@ -624,13 +752,16 @@ describe('urlFieldSchema', () => {
 			['onlyDomains', 'allowed.com'],
 		])
 
-		const [schema, docs] = urlFieldSchema(field, true)
+		const { urlFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = urlFieldSchema(field as any)
 
 		expect(schema).toBe('website: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit onlyDomains if empty', ({ expect }) => {
+	it('should omit onlyDomains if empty', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'website',
 			hidden: false,
@@ -646,7 +777,8 @@ describe('urlFieldSchema', () => {
 			['exceptDomains', 'test.com'],
 		])
 
-		const [schema, docs] = urlFieldSchema(field, true)
+		const { urlFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = urlFieldSchema(field as any)
 
 		expect(schema).toBe('website: string')
 		expect(docs).toBe(expectedDocs)
@@ -654,7 +786,15 @@ describe('urlFieldSchema', () => {
 })
 
 describe('dateFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'created',
 			hidden: false,
@@ -663,13 +803,16 @@ describe('dateFieldSchema', () => {
 			required: false,
 		}
 
-		const [schema, docs] = dateFieldSchema(field, false)
+		const { dateFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = dateFieldSchema(field as any)
 
 		expect(schema).toBe('created: string')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', ({ expect }) => {
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'created',
 			hidden: true,
@@ -686,13 +829,16 @@ describe('dateFieldSchema', () => {
 			['max', '2023-12-31'],
 		])
 
-		const [schema, docs] = dateFieldSchema(field, true)
+		const { dateFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = dateFieldSchema(field as any)
 
 		expect(schema).toBe('created: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit min if empty string', ({ expect }) => {
+	it('should omit min if empty string', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'created',
 			hidden: false,
@@ -708,13 +854,16 @@ describe('dateFieldSchema', () => {
 			['max', '2023-12-31'],
 		])
 
-		const [schema, docs] = dateFieldSchema(field, true)
+		const { dateFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = dateFieldSchema(field as any)
 
 		expect(schema).toBe('created: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit max if empty string', ({ expect }) => {
+	it('should omit max if empty string', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'created',
 			hidden: false,
@@ -730,7 +879,8 @@ describe('dateFieldSchema', () => {
 			['min', '2023-01-01'],
 		])
 
-		const [schema, docs] = dateFieldSchema(field, true)
+		const { dateFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = dateFieldSchema(field as any)
 
 		expect(schema).toBe('created: string')
 		expect(docs).toBe(expectedDocs)
@@ -738,7 +888,15 @@ describe('dateFieldSchema', () => {
 })
 
 describe('autodateFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'timestamp',
 			hidden: false,
@@ -746,13 +904,16 @@ describe('autodateFieldSchema', () => {
 			onUpdate: false,
 		}
 
-		const [schema, docs] = autodateFieldSchema(field, false)
+		const { autodateFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = autodateFieldSchema(field as any)
 
 		expect(schema).toBe('timestamp: string')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', ({ expect }) => {
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'timestamp',
 			hidden: true,
@@ -767,7 +928,8 @@ describe('autodateFieldSchema', () => {
 			['onUpdate', 'true'],
 		])
 
-		const [schema, docs] = autodateFieldSchema(field, true)
+		const { autodateFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = autodateFieldSchema(field as any)
 
 		expect(schema).toBe('timestamp: string')
 		expect(docs).toBe(expectedDocs)
@@ -775,7 +937,15 @@ describe('autodateFieldSchema', () => {
 })
 
 describe('selectFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'category',
 			hidden: false,
@@ -785,13 +955,16 @@ describe('selectFieldSchema', () => {
 			isMultiple: () => false,
 		}
 
-		const [schema, docs] = selectFieldSchema(field, false)
+		const { selectFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = selectFieldSchema(field as any)
 
 		expect(schema).toBe("category: 'news' | 'blog'")
 		expect(docs).toBe('')
 	})
 
-	it('should return tuple if multiple and required', ({ expect }) => {
+	it('should return tuple if multiple and required', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -808,7 +981,8 @@ describe('selectFieldSchema', () => {
 			['maxSelect', '2'],
 		])
 
-		const [schema, docs] = selectFieldSchema(field, true)
+		const { selectFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = selectFieldSchema(field as any)
 
 		expect(schema).toBe(
 			"tags: ['featured' | 'trending' | 'popular', ...('featured' | 'trending' | 'popular')[]]"
@@ -816,7 +990,9 @@ describe('selectFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return array if multiple and NOT required', ({ expect }) => {
+	it('should return array if multiple and NOT required', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -833,13 +1009,16 @@ describe('selectFieldSchema', () => {
 			['maxSelect', '2'],
 		])
 
-		const [schema, docs] = selectFieldSchema(field, true)
+		const { selectFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = selectFieldSchema(field as any)
 
 		expect(schema).toBe("tags: ('featured' | 'trending' | 'popular')[]")
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return schema for multiple select with complete docs', ({ expect }) => {
+	it('should return schema for multiple select with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -856,13 +1035,16 @@ describe('selectFieldSchema', () => {
 			['maxSelect', '2'],
 		])
 
-		const [schema, docs] = selectFieldSchema(field, true)
+		const { selectFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = selectFieldSchema(field as any)
 
 		expect(schema).toBe("tags: ('featured' | 'trending' | 'popular')[]")
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return schema for single select with complete docs', ({ expect }) => {
+	it('should return schema for single select with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'status',
 			hidden: false,
@@ -878,13 +1060,16 @@ describe('selectFieldSchema', () => {
 			['required', 'true'],
 		])
 
-		const [schema, docs] = selectFieldSchema(field, true)
+		const { selectFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = selectFieldSchema(field as any)
 
 		expect(schema).toBe("status: 'draft' | 'published'")
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit maxSelect if not multiple or zero', ({ expect }) => {
+	it('should omit maxSelect if not multiple or zero', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'category',
 			hidden: false,
@@ -900,7 +1085,8 @@ describe('selectFieldSchema', () => {
 			['required', 'false'],
 		])
 
-		const [schema, docs] = selectFieldSchema(field, true)
+		const { selectFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = selectFieldSchema(field as any)
 
 		expect(schema).toBe("category: ('news' | 'blog')[]")
 		expect(docs).toBe(expectedDocs)
@@ -908,7 +1094,15 @@ describe('selectFieldSchema', () => {
 })
 
 describe('fileFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'avatar',
 			hidden: false,
@@ -921,13 +1115,16 @@ describe('fileFieldSchema', () => {
 			isMultiple: () => false,
 		}
 
-		const [schema, docs] = fileFieldSchema(field, false)
+		const { fileFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = fileFieldSchema(field as any)
 
 		expect(schema).toBe('avatar: string')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs for single file', ({ expect }) => {
+	it('should return schema with complete docs for single file', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'avatar',
 			hidden: true,
@@ -950,13 +1147,16 @@ describe('fileFieldSchema', () => {
 			['thumbs', '100x100`, `200x200'],
 		])
 
-		const [schema, docs] = fileFieldSchema(field, true)
+		const { fileFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = fileFieldSchema(field as any)
 
 		expect(schema).toBe('avatar: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return schema with complete docs for multiple files', ({ expect }) => {
+	it('should return schema with complete docs for multiple files', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'gallery',
 			hidden: false,
@@ -980,13 +1180,16 @@ describe('fileFieldSchema', () => {
 			['thumbs', '100x100'],
 		])
 
-		const [schema, docs] = fileFieldSchema(field, true)
+		const { fileFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = fileFieldSchema(field as any)
 
 		expect(schema).toBe('gallery: string[]')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return tuple if multiple and required', ({ expect }) => {
+	it('should return tuple if multiple and required', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'gallery',
 			hidden: true,
@@ -1009,13 +1212,16 @@ describe('fileFieldSchema', () => {
 			['mimeTypes', 'image/jpeg'],
 		])
 
-		const [schema, docs] = fileFieldSchema(field, true)
+		const { fileFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = fileFieldSchema(field as any)
 
 		expect(schema).toBe('gallery: [string, ...string[]]')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return array if multiple and NOT required', ({ expect }) => {
+	it('should return array if multiple and NOT required', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'gallery',
 			hidden: true,
@@ -1038,13 +1244,16 @@ describe('fileFieldSchema', () => {
 			['mimeTypes', 'image/jpeg'],
 		])
 
-		const [schema, docs] = fileFieldSchema(field, true)
+		const { fileFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = fileFieldSchema(field as any)
 
 		expect(schema).toBe('gallery: string[]')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit maxSelect if not multiple or zero', ({ expect }) => {
+	it('should omit maxSelect if not multiple or zero', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'gallery',
 			hidden: false,
@@ -1066,13 +1275,16 @@ describe('fileFieldSchema', () => {
 			['mimeTypes', 'image/jpeg'],
 		])
 
-		const [schema, docs] = fileFieldSchema(field, true)
+		const { fileFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = fileFieldSchema(field as any)
 
 		expect(schema).toBe('gallery: string[]')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit mimeTypes and thumbs if empty', ({ expect }) => {
+	it('should omit mimeTypes and thumbs if empty', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'document',
 			hidden: false,
@@ -1093,7 +1305,8 @@ describe('fileFieldSchema', () => {
 			['maxSize', '1048576'],
 		])
 
-		const [schema, docs] = fileFieldSchema(field, true)
+		const { fileFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = fileFieldSchema(field as any)
 
 		expect(schema).toBe('document: string')
 		expect(docs).toBe(expectedDocs)
@@ -1101,7 +1314,15 @@ describe('fileFieldSchema', () => {
 })
 
 describe('relationFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'user',
 			hidden: false,
@@ -1114,13 +1335,16 @@ describe('relationFieldSchema', () => {
 			isMultiple: () => false,
 		}
 
-		const [schema, docs] = relationFieldSchema(field, false)
+		const { relationFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = relationFieldSchema(field as any)
 
 		expect(schema).toBe('user: string')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs for single relation', ({ expect }) => {
+	it('should return schema with complete docs for single relation', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'author',
 			hidden: true,
@@ -1143,13 +1367,16 @@ describe('relationFieldSchema', () => {
 			['minSelect', '1'],
 		])
 
-		const [schema, docs] = relationFieldSchema(field, true)
+		const { relationFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = relationFieldSchema(field as any)
 
 		expect(schema).toBe('author: string')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return schema with complete docs for multiple relations', ({ expect }) => {
+	it('should return schema with complete docs for multiple relations', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'categories',
 			hidden: false,
@@ -1173,13 +1400,16 @@ describe('relationFieldSchema', () => {
 			['maxSelect', '3'],
 		])
 
-		const [schema, docs] = relationFieldSchema(field, true)
+		const { relationFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = relationFieldSchema(field as any)
 
 		expect(schema).toBe('categories: string[]')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return tuple if multiple and required', ({ expect }) => {
+	it('should return tuple if multiple and required', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -1203,13 +1433,16 @@ describe('relationFieldSchema', () => {
 			['maxSelect', '3'],
 		])
 
-		const [schema, docs] = relationFieldSchema(field, true)
+		const { relationFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = relationFieldSchema(field as any)
 
 		expect(schema).toBe('tags: [string, ...string[]]')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should return array if multiple and NOT required', ({ expect }) => {
+	it('should return array if multiple and NOT required', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'tags',
 			hidden: true,
@@ -1232,13 +1465,16 @@ describe('relationFieldSchema', () => {
 			['maxSelect', '3'],
 		])
 
-		const [schema, docs] = relationFieldSchema(field, true)
+		const { relationFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = relationFieldSchema(field as any)
 
 		expect(schema).toBe('tags: string[]')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit minSelect if zero', ({ expect }) => {
+	it('should omit minSelect if zero', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'tags',
 			hidden: false,
@@ -1261,13 +1497,16 @@ describe('relationFieldSchema', () => {
 			['maxSelect', '5'],
 		])
 
-		const [schema, docs] = relationFieldSchema(field, true)
+		const { relationFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = relationFieldSchema(field as any)
 
 		expect(schema).toBe('tags: string[]')
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it('should omit maxSelect if not multiple or zero', ({ expect }) => {
+	it('should omit maxSelect if not multiple or zero', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'category',
 			hidden: false,
@@ -1290,7 +1529,8 @@ describe('relationFieldSchema', () => {
 			['minSelect', '1'],
 		])
 
-		const [schema, docs] = relationFieldSchema(field, true)
+		const { relationFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = relationFieldSchema(field as any)
 
 		expect(schema).toBe('category: string[]')
 		expect(docs).toBe(expectedDocs)
@@ -1298,7 +1538,15 @@ describe('relationFieldSchema', () => {
 })
 
 describe('jsonFieldSchema', () => {
-	it('should return basic schema without docs', ({ expect }) => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
 		const field = {
 			name: 'data',
 			hidden: false,
@@ -1306,13 +1554,16 @@ describe('jsonFieldSchema', () => {
 			required: false,
 		}
 
-		const [schema, docs] = jsonFieldSchema(field, false)
+		const { jsonFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = jsonFieldSchema(field as any)
 
 		expect(schema).toBe('data: any')
 		expect(docs).toBe('')
 	})
 
-	it('should return schema with complete docs', ({ expect }) => {
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
 		const field = {
 			name: 'data',
 			hidden: true,
@@ -1327,7 +1578,8 @@ describe('jsonFieldSchema', () => {
 			['required', 'true'],
 		])
 
-		const [schema, docs] = jsonFieldSchema(field, true)
+		const { jsonFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = jsonFieldSchema(field as any)
 
 		expect(schema).toBe('data: any')
 		expect(docs).toBe(expectedDocs)

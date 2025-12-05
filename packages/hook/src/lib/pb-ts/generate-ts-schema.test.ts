@@ -1,30 +1,23 @@
 import { describe, it, vi, afterEach } from 'vitest'
 import { generateTsSchema } from './generate-ts-schema'
 
+function setIncludeSystemCollections(value: boolean): void {
+	vi.doMock('../../config.json', () => {
+		return {
+			default: {
+				tsSchema: {
+					includeSystemCollections: value,
+				},
+			},
+		}
+	})
+}
+
 describe('generateTsSchema', () => {
 	afterEach(() => {
 		vi.unstubAllGlobals()
-	})
-
-	it('should handle includeSystemCollections parameter', ({ expect }) => {
-		const mockCollections = [
-			{
-				id: '1',
-				name: 'users',
-				system: true,
-				fields: [],
-				indexes: [],
-			},
-		]
-		vi.stubGlobal('$app', {
-			findAllCollections: vi.fn().mockReturnValue(mockCollections),
-		})
-
-		const resultWithSystem = generateTsSchema(true)
-		expect(resultWithSystem).toContain('export interface Users ')
-
-		const resultWithoutSystem = generateTsSchema(false)
-		expect(resultWithoutSystem).not.toContain('export interface Users ')
+		vi.resetModules()
+		vi.resetAllMocks()
 	})
 
 	it('should include unique identifier if necessary', ({ expect }) => {
@@ -298,25 +291,7 @@ describe('generateTsSchema', () => {
 		expect(result).toContain(`userDetails_via_user?: UserDetails`)
 	})
 
-	it('should include system collections if includeSystemCollections is true', ({ expect }) => {
-		const mockCollections = [
-			{
-				id: '1',
-				name: 'users',
-				system: true,
-				fields: [],
-				indexes: [],
-			},
-		]
-		vi.stubGlobal('$app', {
-			findAllCollections: vi.fn().mockReturnValue(mockCollections),
-		})
-
-		const result = generateTsSchema(true)
-		expect(result).toContain('export interface Users ')
-	})
-
-	it('should not include system collections if includeSystemCollections is false', ({
+	it('should include system collections if includeSystemCollections is true', async ({
 		expect,
 	}) => {
 		const mockCollections = [
@@ -331,8 +306,33 @@ describe('generateTsSchema', () => {
 		vi.stubGlobal('$app', {
 			findAllCollections: vi.fn().mockReturnValue(mockCollections),
 		})
+		setIncludeSystemCollections(true)
+		const { generateTsSchema } = await import('./generate-ts-schema')
 
-		const result = generateTsSchema(false)
+		const result = generateTsSchema()
+		expect(result).toContain('export interface Users ')
+	})
+
+	it('should not include system collections if includeSystemCollections is false', async ({
+		expect,
+	}) => {
+		const mockCollections = [
+			{
+				id: '1',
+				name: 'users',
+				system: true,
+				fields: [],
+				indexes: [],
+			},
+		]
+		vi.stubGlobal('$app', {
+			findAllCollections: vi.fn().mockReturnValue(mockCollections),
+		})
+		setIncludeSystemCollections(false)
+
+		const { generateTsSchema } = await import('./generate-ts-schema')
+
+		const result = generateTsSchema()
 		expect(result).not.toContain('export interface Users ')
 	})
 })
