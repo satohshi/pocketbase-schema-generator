@@ -2,6 +2,8 @@ import { format, haveSameValues, toPascalCase } from '../utils'
 import {
 	autodateFieldSchema,
 	boolFieldSchema,
+	collectionIdSchema,
+	collectionNameSchema,
 	dateFieldSchema,
 	editorFieldSchema,
 	emailFieldSchema,
@@ -55,9 +57,10 @@ readonly [uniqueIdentifier]: unique symbol
 		const fields = new Set<string>()
 
 		collectionInterfaces += `export interface ${toPascalCase(collection.name)} {\n`
+
 		// Add system fields that are always present in PocketBase Records API responses but not in collection fields
-		collectionInterfaces += `collectionId: string\n`
-		collectionInterfaces += `collectionName: string\n`
+		collectionInterfaces += collectionIdSchema(collection.id)
+		collectionInterfaces += collectionNameSchema(collection.name)
 
 		for (const fieldOptions of collection.fields as Array<core.Field>) {
 			const fieldType = fieldOptions.type() as CollectionTypeName

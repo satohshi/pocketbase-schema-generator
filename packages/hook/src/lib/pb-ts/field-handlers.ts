@@ -1,6 +1,42 @@
 import { generateMDTable } from '../utils'
 import config from '../../config.json'
 
+export function collectionIdSchema(
+	collectionId: string,
+	includeDocs = config.tsSchema.includeDocs
+): string {
+	const typeDef = `collectionId: '${collectionId}'`
+	if (!includeDocs) return typeDef
+
+	const rows: [string, string][] = [
+		['type', 'text'],
+		['length', `${collectionId.length}`],
+	]
+
+	const docs = generateMDTable(rows)
+
+	return `${docs}\n${typeDef}\n`
+}
+
+export function collectionNameSchema(
+	collectionName: string,
+	includeDocs = config.tsSchema.includeDocs
+): string {
+	const typeDef = `collectionName: '${collectionName}' | (string & {})`
+	if (!includeDocs) return typeDef
+
+	const rows: [string, string][] = [
+		['type', 'text'],
+		['min', `1`],
+		['min', `255`],
+		['current value', `${collectionName}`],
+	]
+
+	const docs = generateMDTable(rows)
+
+	return `${docs}\n${typeDef}\n`
+}
+
 export function textFieldSchema(
 	{ name, hidden, min, max, pattern, autogeneratePattern, required }: TextField,
 	includeDocs = config.tsSchema.includeDocs
