@@ -5,9 +5,9 @@
 	"license": "MIT",
 	"private": true,
 	"scripts": {
-		"dev": "tsc -w --outDir ../../pb/pb_hooks/",
-		"dev:parallel": "tsc -w --outDir ../../pb/pb_hooks/",
-		"build": "tsc --outDir ../../pb_hooks/",
+		"dev": "tsc -w -p tsconfig.build.json --outDir ../../pb/pb_hooks/",
+		"dev:parallel": "tsc -w -p tsconfig.build.json --outDir ../../pb/pb_hooks/",
+		"build": "tsc -p tsconfig.build.json --outDir ../../pb_hooks/",
 		"lint": "tsc --noEmit",
 		"lint:watch": "tsc -w --noEmit",
 		"test": "vitest run",
