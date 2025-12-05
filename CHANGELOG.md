@@ -6,6 +6,7 @@
 - make options like `outputPath` optional when they're not needed
 - make zod schema for `collectionId` and `collectionName` stricter (fixes #22)
 - make ts schema for `collectionId` and `collectionName` stricter and add docs (fixes #21)
+- add json schema for `config.json` (closes #20)
 
 ## 0.6.2
 

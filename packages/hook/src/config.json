@@ -12,5 +12,7 @@
 		"generateFile": true,
 		"includeSystemCollections": false,
 		"outputPath": "./zodSchema.ts"
-	}
+	},
+
+	"$schema": "./schema.json"
 }

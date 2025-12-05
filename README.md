@@ -15,7 +15,7 @@ The generated schema will have field options in docstrings, so you will get addi
 
 ## Configuration
 
-The `config.json` file should follow the structure below.
+The `config.json` file should follow the structure below. (JSON schema is also provided in `schema.json` for validation purposes.)
 
 ```ts
 interface Config {
