@@ -20,12 +20,27 @@ import type { CollectionTypeName } from '../types'
 
 const DATETIME_REGEX = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d+)?Z$/
 
-export const generateZodSchema = (
-	includeSystemCollections = config.zodSchema.includeSystemCollections
-) => {
+export const generateZodSchema = () => {
+	return generateBanner() + '\n\n' + generateCollectionSchema()
+}
+
+function generateBanner(): string {
+	const lines = []
+
+	if (config.zodSchema.banner) {
+		lines.push(...config.zodSchema.banner)
+	}
+
+	lines.push("import { z } from 'zod'")
+
+	return lines.join('\n')
+}
+
+function generateCollectionSchema(): string {
 	const collections = ($app.findAllCollections() as Array<core.Collection>).filter((c) => {
-		return includeSystemCollections || !c.system
+		return config.zodSchema.includeSystemCollections || !c.system
 	})
+
 	const collectionIdToIdSchemaMap = new Map(
 		collections.map((collection) => {
 			const idField = collection.fields.find((field) => field.name === 'id') as TextField
@@ -38,13 +53,13 @@ export const generateZodSchema = (
 
 	const overrides = config.zodSchema.overrides
 
-	let schema = ''
+	let schema = shouldAddDateRegex ? `const DATETIME_REGEX = ${DATETIME_REGEX}\n\n` : ''
 	for (const collection of collections) {
 		schema += `export const ${toCamelCase(collection.name)}Schema = z.object({\n`
 
 		// Add system fields that are always present in PocketBase Records API responses but not in collection fields
-		schema += `    collectionId: z.string().optional(),\n`
-		schema += `    collectionName: z.string().optional(),\n`
+		schema += `    collectionId: z.literal('${collection.id}').optional(),\n`
+		schema += `    collectionName: z.string().min(1).max(255).optional(),\n`
 
 		for (const fieldOptions of collection.fields as Array<core.Field>) {
 			const fieldType = fieldOptions.type() as CollectionTypeName
@@ -113,19 +128,5 @@ export const generateZodSchema = (
 		schema += '})\n\n'
 	}
 
-	const banner = []
-
-	if (config.zodSchema.banner) {
-		banner.push(...config.zodSchema.banner)
-	}
-
-	banner.push("import { z } from 'zod'")
-
-	let result = banner.join('\n') + '\n\n'
-
-	if (shouldAddDateRegex) {
-		result += `const DATETIME_REGEX = ${DATETIME_REGEX}\n\n`
-	}
-
-	return result + schema
+	return schema
 }

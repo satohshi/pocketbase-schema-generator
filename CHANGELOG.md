@@ -4,6 +4,7 @@
 
 - remove `importStatements` option in favour of `banner`
 - make options like `outputPath` optional when they're not needed
+- make zod schema for `collectionId` and `collectionName` stricter (fixes #22)
 
 ## 0.6.2
 
