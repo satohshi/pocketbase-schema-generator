@@ -1584,4 +1584,248 @@ describe('jsonFieldSchema', () => {
 		expect(schema).toBe('data: any')
 		expect(docs).toBe(expectedDocs)
 	})
+
+	it('should use override type when provided', async ({ expect }) => {
+		setIncludeDocs(false)
+
+		const field = {
+			name: 'metadata',
+			hidden: false,
+			maxSize: 0,
+			required: false,
+			override: 'Record<string, string>',
+		}
+
+		const { jsonFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = jsonFieldSchema(field as any)
+
+		expect(schema).toBe('metadata: Record<string, string>')
+		expect(docs).toBe('')
+	})
+
+	it('should use override type with docs when provided', async ({ expect }) => {
+		setIncludeDocs(true)
+
+		const field = {
+			name: 'settings',
+			hidden: true,
+			maxSize: 1024,
+			required: true,
+			override: 'UserSettings',
+		}
+
+		const expectedDocs = generateMDTable([
+			['type', 'json'],
+			['hidden', 'true'],
+			['maxSize', '1024'],
+			['required', 'true'],
+		])
+
+		const { jsonFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = jsonFieldSchema(field as any)
+
+		expect(schema).toBe('settings: UserSettings')
+		expect(docs).toBe(expectedDocs)
+	})
+})
+
+describe('geoPointSchema', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
+		const field = {
+			name: 'location',
+			hidden: false,
+			required: false,
+		}
+
+		const { geoPointSchema } = await import('./field-handlers')
+		const [schema, docs] = geoPointSchema(field as any)
+
+		expect(schema).toBe('location: { lon: number; lat: number }')
+		expect(docs).toBe('')
+	})
+
+	it('should return schema with complete docs', async ({ expect }) => {
+		setIncludeDocs(true)
+
+		const field = {
+			name: 'location',
+			hidden: true,
+			required: true,
+		}
+
+		const expectedDocs = generateMDTable([
+			['type', 'geoPoint'],
+			['hidden', 'true'],
+			['required', 'true'],
+		])
+
+		const { geoPointSchema } = await import('./field-handlers')
+		const [schema, docs] = geoPointSchema(field as any)
+
+		expect(schema).toBe('location: { lon: number; lat: number }')
+		expect(docs).toBe(expectedDocs)
+	})
+
+	it('should return schema with docs when not required', async ({ expect }) => {
+		setIncludeDocs(true)
+
+		const field = {
+			name: 'coordinates',
+			hidden: false,
+			required: false,
+		}
+
+		const expectedDocs = generateMDTable([
+			['type', 'geoPoint'],
+			['hidden', 'false'],
+			['required', 'false'],
+		])
+
+		const { geoPointSchema } = await import('./field-handlers')
+		const [schema, docs] = geoPointSchema(field as any)
+
+		expect(schema).toBe('coordinates: { lon: number; lat: number }')
+		expect(docs).toBe(expectedDocs)
+	})
+})
+
+describe('collectionIdSchema', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
+		const { collectionIdSchema } = await import('./field-handlers')
+		const result = collectionIdSchema('a')
+
+		expect(result).toBe("collectionId: 'a'")
+	})
+
+	it('should return schema with docs when includeDocs is true', async ({ expect }) => {
+		setIncludeDocs(true)
+
+		const expectedDocs = generateMDTable([
+			['type', 'text'],
+			['min', `1`],
+			['min', `100`],
+		])
+
+		const { collectionIdSchema } = await import('./field-handlers')
+		const result = collectionIdSchema('a')
+
+		expect(result).toContain("collectionId: 'a'")
+		expect(result).toContain(expectedDocs)
+	})
+})
+
+describe('collectionNameSchema', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should return basic schema without docs', async ({ expect }) => {
+		setIncludeDocs(false)
+
+		const { collectionNameSchema } = await import('./field-handlers')
+		const result = collectionNameSchema('users')
+
+		expect(result).toBe("collectionName: 'users' | (string & {})")
+	})
+
+	it('should return schema with docs when includeDocs is true', async ({ expect }) => {
+		setIncludeDocs(true)
+		const collectionName = 'a'
+
+		const expectedDocs = generateMDTable([
+			['type', 'text'],
+			['min', `1`],
+			['min', `255`],
+			['current value', `${collectionName}`],
+		])
+
+		const { collectionNameSchema } = await import('./field-handlers')
+		const result = collectionNameSchema(collectionName)
+
+		expect(result).toContain(`collectionName: '${collectionName}' | (string & {})`)
+		expect(result).toContain(expectedDocs)
+	})
+})
+
+describe('selectFieldSchema - escaping', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.resetModules()
+		vi.resetAllMocks()
+	})
+
+	it('should escape single quotes in select values', async ({ expect }) => {
+		setIncludeDocs(false)
+
+		const field = {
+			name: 'status',
+			hidden: false,
+			values: ["it's", "don't", "won't"],
+			maxSelect: 0,
+			required: false,
+			isMultiple: () => false,
+		}
+
+		const { selectFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = selectFieldSchema(field as any)
+
+		expect(schema).toBe("status: 'it\\'s' | 'don\\'t' | 'won\\'t'")
+		expect(docs).toBe('')
+	})
+
+	it('should escape backslashes in select values', async ({ expect }) => {
+		setIncludeDocs(false)
+
+		const field = {
+			name: 'path',
+			hidden: false,
+			values: ['C:\\Users', 'D:\\Data'],
+			maxSelect: 0,
+			required: false,
+			isMultiple: () => false,
+		}
+
+		const { selectFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = selectFieldSchema(field as any)
+
+		expect(schema).toBe("path: 'C:\\\\Users' | 'D:\\\\Data'")
+		expect(docs).toBe('')
+	})
+
+	it('should escape quotes and backslashes in multiple select values', async ({ expect }) => {
+		setIncludeDocs(false)
+
+		const field = {
+			name: 'tags',
+			hidden: false,
+			values: ["it's", "don't", 'C:\\Users'],
+			maxSelect: 0,
+			required: false,
+			isMultiple: () => true,
+		}
+
+		const { selectFieldSchema } = await import('./field-handlers')
+		const [schema, docs] = selectFieldSchema(field as any)
+
+		expect(schema).toBe("tags: ('it\\'s' | 'don\\'t' | 'C:\\\\Users')[]")
+		expect(docs).toBe('')
+	})
 })

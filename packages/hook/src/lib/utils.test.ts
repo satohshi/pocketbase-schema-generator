@@ -1,5 +1,12 @@
 import { describe, it } from 'vitest'
-import { toPascalCase, haveSameValues, format, generateMDTable } from './utils'
+import {
+	toPascalCase,
+	toCamelCase,
+	haveSameValues,
+	format,
+	generateMDTable,
+	extractFilename,
+} from './utils'
 
 describe('toPascalCase', () => {
 	it('should convert snake_case to PascalCase', ({ expect }) => {
@@ -138,5 +145,66 @@ describe('generateMDTable', () => {
 		]
 		const expectedOutput = `/**\n * |         |             |\n * | ------- | ----------- |\n * | short   | \`longvalue\` |\n * | longkey | \`short\`     |\n */`
 		expect(generateMDTable(rows)).toBe(expectedOutput)
+	})
+})
+
+describe('toCamelCase', () => {
+	it('should convert snake_case to camelCase', ({ expect }) => {
+		expect(toCamelCase('example_name')).toBe('exampleName')
+		expect(toCamelCase('another_example_name')).toBe('anotherExampleName')
+	})
+
+	it('should handle single word input', ({ expect }) => {
+		expect(toCamelCase('example')).toBe('example')
+	})
+
+	it('should handle empty string input', ({ expect }) => {
+		expect(toCamelCase('')).toBe('')
+	})
+
+	it('should handle input with multiple underscores', ({ expect }) => {
+		expect(toCamelCase('example__name')).toBe('exampleName')
+		expect(toCamelCase('__example_name')).toBe('exampleName')
+		expect(toCamelCase('example_name__')).toBe('exampleName')
+	})
+
+	it('should handle input with no underscores', ({ expect }) => {
+		expect(toCamelCase('examplename')).toBe('examplename')
+	})
+
+	it('should handle single character input', ({ expect }) => {
+		expect(toCamelCase('a')).toBe('a')
+	})
+
+	it('should handle input starting with underscore', ({ expect }) => {
+		expect(toCamelCase('_example')).toBe('example')
+	})
+})
+
+describe('extractFilename', () => {
+	it('should extract filename from Windows path', ({ expect }) => {
+		expect(extractFilename('C:\\Users\\test\\file.ts')).toBe('file.ts')
+		expect(extractFilename('C:\\path\\to\\schema.ts')).toBe('schema.ts')
+	})
+
+	it('should extract filename from Unix path', ({ expect }) => {
+		expect(extractFilename('/home/user/file.ts')).toBe('file.ts')
+		expect(extractFilename('/path/to/schema.ts')).toBe('schema.ts')
+	})
+
+	it('should return filename when no path separators', ({ expect }) => {
+		expect(extractFilename('file.ts')).toBe('file.ts')
+		expect(extractFilename('schema.ts')).toBe('schema.ts')
+	})
+
+	it('should handle relative paths', ({ expect }) => {
+		expect(extractFilename('./file.ts')).toBe('file.ts')
+		expect(extractFilename('../schema.ts')).toBe('schema.ts')
+		expect(extractFilename('../../generated/schema.ts')).toBe('schema.ts')
+	})
+
+	it('should handle paths with mixed separators', ({ expect }) => {
+		expect(extractFilename('C:/Users/test/file.ts')).toBe('file.ts')
+		expect(extractFilename('\\path/to\\file.ts')).toBe('file.ts')
 	})
 })
