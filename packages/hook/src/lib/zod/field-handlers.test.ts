@@ -29,7 +29,7 @@ describe('textFieldSchema', () => {
 				max: 0,
 				required: false,
 			} as any)
-		).toBe('title: z.string()')
+		).toBe('title: z.string().max(5000)')
 	})
 
 	it('should handle regex pattern', ({ expect }) => {
@@ -41,7 +41,7 @@ describe('textFieldSchema', () => {
 				max: 0,
 				required: false,
 			} as any)
-		).toBe('code: z.string().regex(/[A-Z]+/)')
+		).toBe('code: z.string().regex(/[A-Z]+/).max(5000)')
 	})
 
 	it('should add length when min equals max', ({ expect }) => {
@@ -77,7 +77,19 @@ describe('textFieldSchema', () => {
 				max: 0,
 				required: true,
 			} as any)
-		).toBe('required_field: z.string().min(1)')
+		).toBe('required_field: z.string().min(1).max(5000)')
+	})
+
+	it('should add max(5000) when max is not set', ({ expect }) => {
+		expect(
+			textFieldSchema({
+				name: 'required_field',
+				pattern: '',
+				min: 0,
+				max: 0,
+				required: false,
+			} as any)
+		).toBe('required_field: z.string().max(5000)')
 	})
 })
 

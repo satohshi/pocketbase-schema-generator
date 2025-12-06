@@ -13,7 +13,7 @@ export function textFieldSchema({ name, pattern, min, max, required }: TextField
 		} else if (required) {
 			schema += '.min(1)'
 		}
-		if (max > 0) schema += `.max(${max})`
+		schema += `.max(${max || 5000})`
 	}
 
 	return schema

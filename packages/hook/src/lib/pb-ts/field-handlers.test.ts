@@ -123,6 +123,7 @@ describe('textFieldSchema', () => {
 			['hidden', 'false'],
 			['required', 'true'],
 			['min', '5'],
+			['max', '5000'],
 			['pattern', '^[a-z]+$'],
 			['autogeneratePattern', '^[a-z]+$'],
 		])

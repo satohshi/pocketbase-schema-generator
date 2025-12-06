@@ -51,7 +51,7 @@ export function textFieldSchema({
 	]
 
 	if (min > 0) rows.push(['min', `${min}`])
-	if (max > 0) rows.push(['max', `${max}`])
+	rows.push(['max', `${max || 5000}`])
 	if (pattern) rows.push(['pattern', pattern])
 	if (autogeneratePattern) rows.push(['autogeneratePattern', autogeneratePattern])
 
