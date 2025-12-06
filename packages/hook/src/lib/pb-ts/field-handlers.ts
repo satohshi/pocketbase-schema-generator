@@ -78,7 +78,7 @@ export function passwordFieldSchema({
 	]
 
 	if (min > 0) rows.push(['min', `${min}`])
-	if (max > 0) rows.push(['max', `${max}`])
+	rows.push(['max', `${max || 71}`])
 	if (pattern) rows.push(['pattern', pattern])
 
 	const docs = generateMDTable(rows)

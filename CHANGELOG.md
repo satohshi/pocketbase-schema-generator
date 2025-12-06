@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- set default max value for password field to the pb's max length 71 (fix #23)
 
 ## 0.7.0
 

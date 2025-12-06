@@ -274,7 +274,7 @@ describe('passwordFieldSchema', () => {
 		expect(docs).toBe(expectedDocs)
 	})
 
-	it("should omit max if it's not set", async ({ expect }) => {
+	it("max should default to 71 if it's not set", async ({ expect }) => {
 		setIncludeDocs(true)
 
 		const field = {
@@ -291,6 +291,7 @@ describe('passwordFieldSchema', () => {
 			['hidden', 'false'],
 			['required', 'true'],
 			['min', '8'],
+			['max', '71'],
 			['pattern', '^[a-zA-Z0-9]+$'],
 		])
 

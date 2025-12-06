@@ -19,6 +19,11 @@ export function textFieldSchema({ name, pattern, min, max, required }: TextField
 	return schema
 }
 
+export function passwordFieldSchema(fieldOptions: PasswordField): string {
+	fieldOptions.max ||= 71
+	return textFieldSchema(fieldOptions as unknown as TextField)
+}
+
 export function editorFieldSchema({ name, required }: EditorField): string {
 	return `${name}: z.string()${required ? '.min(1)' : ''}`
 }
@@ -153,10 +158,6 @@ export function jsonFieldSchema({
 
 export function autodateFieldSchema({ name }: AutodateField): string {
 	return `${name}: z.string().regex(DATETIME_REGEX)`
-}
-
-export function passwordFieldSchema(fieldOptions: PasswordField): string {
-	return textFieldSchema(fieldOptions as unknown as TextField)
 }
 
 export function geoPointFieldSchema({ name, required }: GeoPointField): string {

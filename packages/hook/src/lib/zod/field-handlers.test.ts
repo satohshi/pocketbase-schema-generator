@@ -6,6 +6,7 @@ import {
 	emailFieldSchema,
 	fileFieldSchema,
 	numberFieldSchema,
+	passwordFieldSchema,
 	relationFieldSchema,
 	selectFieldSchema,
 	textFieldSchema,
@@ -77,6 +78,80 @@ describe('textFieldSchema', () => {
 				required: true,
 			} as any)
 		).toBe('required_field: z.string().min(1)')
+	})
+})
+
+describe('passwordFieldSchema', () => {
+	it('should generate basic string schema', ({ expect }) => {
+		expect(
+			passwordFieldSchema({
+				name: 'title',
+				pattern: '',
+				min: 0,
+				max: 0,
+				required: false,
+			} as any)
+		).toBe('title: z.string().max(71)')
+	})
+
+	it('should handle regex pattern', ({ expect }) => {
+		expect(
+			passwordFieldSchema({
+				name: 'code',
+				pattern: '[A-Z]+',
+				min: 0,
+				max: 0,
+				required: false,
+			} as any)
+		).toBe('code: z.string().regex(/[A-Z]+/).max(71)')
+	})
+
+	it('should add length when min equals max', ({ expect }) => {
+		expect(
+			passwordFieldSchema({
+				name: 'pin',
+				pattern: '',
+				min: 4,
+				max: 4,
+				required: false,
+			} as any)
+		).toBe('pin: z.string().length(4)')
+	})
+
+	it('should add min/max constraints', ({ expect }) => {
+		expect(
+			passwordFieldSchema({
+				name: 'username',
+				pattern: '',
+				min: 3,
+				max: 20,
+				required: false,
+			} as any)
+		).toBe('username: z.string().min(3).max(20)')
+	})
+
+	it('should add the default .max(71) when max is not set', ({ expect }) => {
+		expect(
+			passwordFieldSchema({
+				name: 'username',
+				pattern: '',
+				min: 3,
+				max: 0,
+				required: false,
+			} as any)
+		).toBe('username: z.string().min(3).max(71)')
+	})
+
+	it('should add min(1) when required without min', ({ expect }) => {
+		expect(
+			passwordFieldSchema({
+				name: 'required_field',
+				pattern: '',
+				min: 0,
+				max: 0,
+				required: true,
+			} as any)
+		).toBe('required_field: z.string().min(1).max(71)')
 	})
 })
 
