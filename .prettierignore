@@ -1,8 +1,13 @@
 pnpm-lock.yaml
 node_modules
 
-pb
+pb/pb_data
+pb/pb_hooks
+pb/tsSchema.ts
+pb/zodSchema.ts
 pb_hooks
+
+packages/hook/src/types.d.ts
 
 packages/**/node_modules
 packages/ui/build

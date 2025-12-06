@@ -1,0 +1,117 @@
+/// <reference path="../pb_data/types.d.ts" />
+migrate(
+	(app) => {
+		const collection = new Collection({
+			createRule: null,
+			deleteRule: null,
+			fields: [
+				{
+					autogeneratePattern: '[a-z0-9]{15}',
+					hidden: false,
+					id: 'text3208210256',
+					max: 15,
+					min: 15,
+					name: 'id',
+					pattern: '^[a-z0-9]+$',
+					presentable: false,
+					primaryKey: true,
+					required: true,
+					system: true,
+					type: 'text',
+				},
+				{
+					exceptDomains: [],
+					hidden: false,
+					id: 'email2754177251',
+					name: 'emailBase',
+					onlyDomains: [],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'email',
+				},
+				{
+					exceptDomains: ['gmail.com'],
+					hidden: false,
+					id: 'email1444798430',
+					name: 'emailExceptDomain',
+					onlyDomains: [],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'email',
+				},
+				{
+					exceptDomains: ['gmail.com', 'outlook.com'],
+					hidden: false,
+					id: 'email2050174215',
+					name: 'emailExceptDomains',
+					onlyDomains: [],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'email',
+				},
+				{
+					exceptDomains: [],
+					hidden: false,
+					id: 'email3044985545',
+					name: 'emailOnlyDomain',
+					onlyDomains: ['gmail.com'],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'email',
+				},
+				{
+					exceptDomains: [],
+					hidden: false,
+					id: 'email4177775573',
+					name: 'emailOnlyDomains',
+					onlyDomains: ['gmail.com', 'outlook.com'],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'email',
+				},
+				{
+					exceptDomains: [],
+					hidden: false,
+					id: 'email1901600507',
+					name: 'emailNonempty',
+					onlyDomains: [],
+					presentable: false,
+					required: true,
+					system: false,
+					type: 'email',
+				},
+				{
+					exceptDomains: [],
+					hidden: true,
+					id: 'email2558804376',
+					name: 'emailHidden',
+					onlyDomains: [],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'email',
+				},
+			],
+			id: 'pbc_752140959',
+			indexes: [],
+			listRule: null,
+			name: 'email',
+			system: false,
+			type: 'base',
+			updateRule: null,
+			viewRule: null,
+		})
+
+		return app.save(collection)
+	},
+	(app) => {
+		const collection = app.findCollectionByNameOrId('pbc_752140959')
+
+		return app.delete(collection)
+	}
+)

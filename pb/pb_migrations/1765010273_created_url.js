@@ -1,0 +1,117 @@
+/// <reference path="../pb_data/types.d.ts" />
+migrate(
+	(app) => {
+		const collection = new Collection({
+			createRule: null,
+			deleteRule: null,
+			fields: [
+				{
+					autogeneratePattern: '[a-z0-9]{15}',
+					hidden: false,
+					id: 'text3208210256',
+					max: 15,
+					min: 15,
+					name: 'id',
+					pattern: '^[a-z0-9]+$',
+					presentable: false,
+					primaryKey: true,
+					required: true,
+					system: true,
+					type: 'text',
+				},
+				{
+					exceptDomains: null,
+					hidden: false,
+					id: 'url2027329591',
+					name: 'urlBase',
+					onlyDomains: null,
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'url',
+				},
+				{
+					exceptDomains: ['google.com'],
+					hidden: false,
+					id: 'url418751605',
+					name: 'urlExceptDomain',
+					onlyDomains: [],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'url',
+				},
+				{
+					exceptDomains: ['google.com', 'yahoo.com'],
+					hidden: false,
+					id: 'url997834524',
+					name: 'urlExceptDomains',
+					onlyDomains: [],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'url',
+				},
+				{
+					exceptDomains: [],
+					hidden: false,
+					id: 'url779292168',
+					name: 'urlOnlyDomain',
+					onlyDomains: ['google.com'],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'url',
+				},
+				{
+					exceptDomains: [],
+					hidden: false,
+					id: 'url368784439',
+					name: 'urlOnlyDomains',
+					onlyDomains: ['google.com', 'yahoo.com'],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'url',
+				},
+				{
+					exceptDomains: [],
+					hidden: false,
+					id: 'url1911234664',
+					name: 'urlNonempty',
+					onlyDomains: [],
+					presentable: false,
+					required: true,
+					system: false,
+					type: 'url',
+				},
+				{
+					exceptDomains: [],
+					hidden: true,
+					id: 'url3228397408',
+					name: 'urlHidden',
+					onlyDomains: [],
+					presentable: false,
+					required: false,
+					system: false,
+					type: 'url',
+				},
+			],
+			id: 'pbc_3883334831',
+			indexes: [],
+			listRule: null,
+			name: 'url',
+			system: false,
+			type: 'base',
+			updateRule: null,
+			viewRule: null,
+		})
+
+		return app.save(collection)
+	},
+	(app) => {
+		const collection = app.findCollectionByNameOrId('pbc_3883334831')
+
+		return app.delete(collection)
+	}
+)

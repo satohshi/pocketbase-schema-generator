@@ -1,3 +1,5 @@
 node_modules
-pb
-pb_hooks
+pb/pocketbase.exe
+pb/pb_data
+pb/pb_hooks
+./pb_hooks
