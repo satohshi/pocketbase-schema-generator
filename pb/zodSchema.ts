@@ -234,3 +234,19 @@ export const viewCollectionSchema = z.object({
     likes: z.unknown().optional(),
 })
 
+export const aSchema = z.object({
+    collectionId: z.literal('pbc_3535952755').optional(),
+    collectionName: z.string().min(1).max(255).optional(),
+    id: z.string().regex(/^[a-z0-9]+$/).length(15).optional(),
+    created: z.string().regex(DATETIME_REGEX).optional(),
+    updated: z.string().regex(DATETIME_REGEX).optional(),
+})
+
+export const bSchema = z.object({
+    collectionId: z.literal('pbc_1271597769').optional(),
+    collectionName: z.string().min(1).max(255).optional(),
+    id: z.string().regex(/^[a-z0-9]+$/).length(15).optional(),
+    created: z.string().regex(DATETIME_REGEX).optional(),
+    updated: z.string().regex(DATETIME_REGEX).optional(),
+})
+

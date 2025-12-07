@@ -1,3 +1,5 @@
+declare const uniqueIdentifier: unique symbol
+
 export interface Users {
     /**
      * |      |        |
@@ -1650,6 +1652,112 @@ export interface ViewCollection {
     likes: any
 }
 
+export interface A {
+    /**
+     * |      |        |
+     * | ---- | ------ |
+     * | type | `text` |
+     * | min  | `1`    |
+     * | min  | `100`  |
+     */
+    collectionId: 'pbc_3535952755'
+    /**
+     * |               |        |
+     * | ------------- | ------ |
+     * | type          | `text` |
+     * | min           | `1`    |
+     * | min           | `255`  |
+     * | current value | `a`    |
+     */
+    collectionName: 'a' | (string & {})
+    /**
+     * |                     |                |
+     * | ------------------- | -------------- |
+     * | type                | `text`         |
+     * | hidden              | `false`        |
+     * | required            | `true`         |
+     * | min                 | `15`           |
+     * | max                 | `15`           |
+     * | pattern             | `^[a-z0-9]+$`  |
+     * | autogeneratePattern | `[a-z0-9]{15}` |
+     */
+    id: string
+    /**
+     * |          |            |
+     * | -------- | ---------- |
+     * | type     | `autodate` |
+     * | hidden   | `false`    |
+     * | onCreate | `true`     |
+     * | onUpdate | `false`    |
+     */
+    created: string
+    /**
+     * |          |            |
+     * | -------- | ---------- |
+     * | type     | `autodate` |
+     * | hidden   | `false`    |
+     * | onCreate | `true`     |
+     * | onUpdate | `true`     |
+     */
+    updated: string
+}
+
+export interface B {
+    /**
+     * |      |        |
+     * | ---- | ------ |
+     * | type | `text` |
+     * | min  | `1`    |
+     * | min  | `100`  |
+     */
+    collectionId: 'pbc_1271597769'
+    /**
+     * |               |        |
+     * | ------------- | ------ |
+     * | type          | `text` |
+     * | min           | `1`    |
+     * | min           | `255`  |
+     * | current value | `b`    |
+     */
+    collectionName: 'b' | (string & {})
+    /**
+     * |                     |                |
+     * | ------------------- | -------------- |
+     * | type                | `text`         |
+     * | hidden              | `false`        |
+     * | required            | `true`         |
+     * | min                 | `15`           |
+     * | max                 | `15`           |
+     * | pattern             | `^[a-z0-9]+$`  |
+     * | autogeneratePattern | `[a-z0-9]{15}` |
+     */
+    id: string
+    /**
+     * |          |            |
+     * | -------- | ---------- |
+     * | type     | `autodate` |
+     * | hidden   | `false`    |
+     * | onCreate | `true`     |
+     * | onUpdate | `false`    |
+     */
+    created: string
+    /**
+     * |          |            |
+     * | -------- | ---------- |
+     * | type     | `autodate` |
+     * | hidden   | `false`    |
+     * | onCreate | `true`     |
+     * | onUpdate | `true`     |
+     */
+    updated: string
+    
+    /**
+     * This is a unique identifier to help TypeScript differentiate this interface from others sharing the same properties.
+     * Refer to https://github.com/satohshi/pocketbase-ts#dealing-with-tables-with-exactly-the-same-properties for more information.
+     */
+    readonly [uniqueIdentifier]: unique symbol
+}
+
 
 /**
  * Commented-out back-relations are what will be inferred by pocketbase-ts from the forward relations.
@@ -1744,6 +1852,12 @@ export type Schema = {
     }
     viewCollection: {
         type: ViewCollection
+    }
+    a: {
+        type: A
+    }
+    b: {
+        type: B
     }
 }
 
