@@ -46,10 +46,7 @@ await writeFile(jsonPath, JSON.stringify(packageJson, null, '\t') + '\n')
 
 // Update CHANGELOG.md
 const changelog = await readFile('./CHANGELOG.md', 'utf8')
-const updatedChangelog = changelog.replace(
-	/^## Unreleased$/gm,
-	`## Unreleased\n\n\n## ${newVersion}`
-)
+const updatedChangelog = changelog.replace(/^## Unreleased$/gm, `## Unreleased\n\n## ${newVersion}`)
 await writeFile('./CHANGELOG.md', updatedChangelog)
 
 // Commit and tag
