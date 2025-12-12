@@ -2,7 +2,7 @@ import { generateMDTable } from '../utils'
 import config from '../../config.json'
 
 export function collectionIdSchema(collectionId: string): string {
-	const typeDef = `collectionId: '${collectionId}'`
+	const typeDef = `collectionId: '${collectionId}'\n`
 	if (!config.tsSchema.includeDocs) return typeDef
 
 	const rows: [string, string][] = [
@@ -13,11 +13,11 @@ export function collectionIdSchema(collectionId: string): string {
 
 	const docs = generateMDTable(rows)
 
-	return `${docs}\n${typeDef}\n`
+	return `${docs}\n${typeDef}`
 }
 
 export function collectionNameSchema(collectionName: string): string {
-	const typeDef = `collectionName: '${collectionName}' | (string & {})`
+	const typeDef = `collectionName: '${collectionName}' | (string & {})\n`
 	if (!config.tsSchema.includeDocs) return typeDef
 
 	const rows: [string, string][] = [
@@ -29,7 +29,7 @@ export function collectionNameSchema(collectionName: string): string {
 
 	const docs = generateMDTable(rows)
 
-	return `${docs}\n${typeDef}\n`
+	return `${docs}\n${typeDef}`
 }
 
 export function textFieldSchema({
