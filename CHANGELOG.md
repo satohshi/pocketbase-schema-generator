@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.7.2
+
 - fix formatting error that occurs when `includeDocs` is set to `false`
 
 ## 0.7.1
