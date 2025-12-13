@@ -11,8 +11,8 @@
 		"lint": "prettier --check .",
 		"format": "prettier --write .",
 		"test": "pnpm run -r --parallel test",
-		"dev:ui": "cd packages/ui && pnpm run dev",
-		"dev:hook": "cd packages/hook && pnpm run dev",
+		"dev:ui": "pnpm -C packages/ui run dev",
+		"dev:hook": "pnpm -C packages/hook run dev",
 		"bump": "node ./scripts/bump-version.mjs"
 	},
 	"devDependencies": {
