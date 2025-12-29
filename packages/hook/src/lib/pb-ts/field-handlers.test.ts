@@ -1712,7 +1712,7 @@ describe('collectionIdSchema', () => {
 		const { collectionIdSchema } = await import('./field-handlers')
 		const result = collectionIdSchema('a')
 
-		expect(result).toBe("collectionId: 'a'")
+		expect(result).toBe("collectionId: 'a'\n")
 	})
 
 	it('should return schema with docs when includeDocs is true', async ({ expect }) => {
@@ -1745,7 +1745,7 @@ describe('collectionNameSchema', () => {
 		const { collectionNameSchema } = await import('./field-handlers')
 		const result = collectionNameSchema('users')
 
-		expect(result).toBe("collectionName: 'users' | (string & {})")
+		expect(result).toBe("collectionName: 'users' | (string & {})\n")
 	})
 
 	it('should return schema with docs when includeDocs is true', async ({ expect }) => {
